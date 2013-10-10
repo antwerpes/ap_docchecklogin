@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for backend components of 'ap_docchecklogin'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="pluginName">DocCheck Login</label>
+
+			<label index="flexform.generaltab">General</label>
+			<label index="flexform.dummyUser">Dummy User</label>
+			<label index="flexform.loginId">Login ID</label>
+
+			<label index="flexform.advancedtab">Advanced</label>
+
+			<label index="flexform.loginLayout">Login-Template</label>
+			<label index="flexform.loginLayout.custom">Custom Template (specify)</label>
+			<label index="flexform.customLayout">Custom Template Key (opt.)</label>
+			<label index="flexform.parentNotTop">Target _parent instead of _top (Frameset)</label>
+
+			<label index="flexform.language">Language</label>
+
+			<label index="flexform.language.de">German (Germany)</label>
+			<label index="flexform.language.chde">German (Switzerland)</label>
+			<label index="flexform.language.at">German (Austria)</label>
+			<label index="flexform.language.com">English</label>
+			<label index="flexform.language.befr">French (Belgium)</label>
+			<label index="flexform.language.fr">French (France)</label>
+			<label index="flexform.language.chfr">French (Switzerland)</label>
+			<label index="flexform.language.it">Italian (Italy)</label>
+			<label index="flexform.language.benl">Dutch (Belgium)</label>
+			<label index="flexform.language.nl">Dutch (Netherlands)</label>
+			<label index="flexform.language.es">Spanish (Spain)</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="pluginName">DocCheck Login</label>
+
+			<label index="flexform.generaltab">Allgemein</label>
+			<label index="flexform.dummyUser">Dummy User</label>
+			<label index="flexform.loginId">Login ID</label>
+
+			<label index="flexform.advancedtab">Erweitert</label>
+
+			<label index="flexform.loginLayout">Loginform Layout</label>
+			<label index="flexform.loginLayout.custom">Custom-Layout (bitte angeben)</label>
+			<label index="flexform.customLayout">Custom-Layout-Bezeichnung (opt.)</label>
+
+			<label index="flexform.language">Sprache</label>
+
+			<label index="flexform.language.de">Deutsch (Deuschland)</label>
+			<label index="flexform.language.chde">Deutsch (Schweiz)</label>
+			<label index="flexform.language.at">Deutsch (Österreich)</label>
+			<label index="flexform.language.com">Englisch</label>
+			<label index="flexform.language.befr">Französisch (Belgien)</label>
+			<label index="flexform.language.fr">Französisch (Frankreich)</label>
+			<label index="flexform.language.chfr">Französisch (Schweiz)</label>
+			<label index="flexform.language.it">Italienisch (Italien)</label>
+			<label index="flexform.language.benl">Niederländisch (Belgien)</label>
+			<label index="flexform.language.nl">Niederländisch (Niederlande)</label>
+			<label index="flexform.language.es">Spanisch (Spanien)</label>
+		</languageKey>
+	</data>
+</T3locallang>

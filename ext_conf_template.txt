@@ -1,0 +1,8 @@
+# cat=basic/enable; type=string; label=Expected Value of the dc get Parameter. Use this for increased security in your Redirect-After-Login-Setting in DocCheck CReaM
+dcParam = 1
+# cat=basic/enable; type=string; label=User Name of the dummy user to be used with the DocCheck Authentication Service.
+dummyUser =
+# cat=basic/enable; type=int; label=UID of the page where the dummy user is stored
+dummyUserPid = 0
+# cat=basic/enable; type=int; label=Use fe_user redirect after login-Feature. Allows you to set a target URL in the Dummy User's Config when fe_login is enabled. 1|0
+useFeLoginRedirect = 1

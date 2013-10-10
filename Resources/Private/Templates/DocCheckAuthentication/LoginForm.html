@@ -1,0 +1,26 @@
+<iframe
+	align="left"
+	scrolling="no"
+	frameborder="0"
+	<f:if condition="{settings.loginLayout} == 's'">
+		width="156"
+		height="203"
+	</f:if>
+	<f:if condition="{settings.loginLayout} == 'm'">
+		width="311"
+		height="188"
+	</f:if>
+	<f:if condition="{settings.loginLayout} == 'l'">
+		width="424"
+		height="215"
+	</f:if>
+	<f:if condition="{settings.loginLayout} == 'xl'">
+		width="467"
+		height="231"
+	</f:if>
+	class="dclogin dclogin-{settings.loginLayout}"
+	name="DCLogin"
+	title="DocCheck Login"
+	src="https://login.doccheck.com/code/{settings.loginId}/{settings.language}/{templateKey}/{settings.params}">
+	<a href="https://login.doccheck.com/code/{settings.loginId}/{settings.language}/{templateKey}/{settings.params}">DocCheck Login</a>
+</iframe>

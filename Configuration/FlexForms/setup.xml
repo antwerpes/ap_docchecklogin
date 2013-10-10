@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<T3DataStructure>
+	<meta>
+		<langDisable>1</langDisable>
+	</meta>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.generaltab</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<settings.loginId>
+						<TCEforms>
+							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.loginId</label>
+							<config>
+								<type>input</type>
+								<default></default>
+								<size>20</size>
+							</config>
+						</TCEforms>
+					</settings.loginId>
+					<settings.loginLayout>
+						<TCEforms>
+							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.loginLayout</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">XL</numIndex>
+										<numIndex index="1">xl</numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">L</numIndex>
+										<numIndex index="1">l</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">M</numIndex>
+										<numIndex index="1">m</numIndex>
+									</numIndex>
+									<numIndex index="3" type="array">
+										<numIndex index="0">S</numIndex>
+										<numIndex index="1">s</numIndex>
+									</numIndex>
+									<numIndex index="4" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.loginLayout.custom</numIndex>
+										<numIndex index="1">custom</numIndex>
+									</numIndex>
+								</items>
+								<minitems>1</minitems>
+								<maxitems>1</maxitems>
+								<size>1</size>
+							</config>
+						</TCEforms>
+					</settings.loginLayout>
+					<settings.customLayout>
+						<TCEforms>
+							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.customLayout</label>
+							<config>
+								<type>input</type>
+								<default></default>
+								<size>20</size>
+							</config>
+						</TCEforms>
+					</settings.customLayout>
+					<settings.language>
+						<TCEforms>
+							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language</label>
+							<config>
+								<type>select</type>
+								<items type="array">
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.de</numIndex>
+										<numIndex index="1">de</numIndex>
+									</numIndex>
+									<numIndex index="1" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.chde</numIndex>
+										<numIndex index="1">chde</numIndex>
+									</numIndex>
+									<numIndex index="2" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.at</numIndex>
+										<numIndex index="1">at</numIndex>
+									</numIndex>
+									<numIndex index="3" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.com</numIndex>
+										<numIndex index="1">com</numIndex>
+									</numIndex>
+									<numIndex index="4" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.befr</numIndex>
+										<numIndex index="1">befr</numIndex>
+									</numIndex>
+									<numIndex index="5" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.fr</numIndex>
+										<numIndex index="1">fr</numIndex>
+									</numIndex>
+									<numIndex index="6" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.chfr</numIndex>
+										<numIndex index="1">chfr</numIndex>
+									</numIndex>
+									<numIndex index="7" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.it</numIndex>
+										<numIndex index="1">it</numIndex>
+									</numIndex>
+									<numIndex index="8" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.benl</numIndex>
+										<numIndex index="1">benl</numIndex>
+									</numIndex>
+									<numIndex index="9" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.nl</numIndex>
+										<numIndex index="1">nl</numIndex>
+									</numIndex>
+									<numIndex index="10" type="array">
+										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.es</numIndex>
+										<numIndex index="1">es</numIndex>
+									</numIndex>
+
+								</items>
+								<minitems>1</minitems>
+								<maxitems>1</maxitems>
+								<size>1</size>
+							</config>
+						</TCEforms>
+					</settings.language>
+				</el>
+			</ROOT>
+		</sDEF>
+	</sheets>
+</T3DataStructure>
