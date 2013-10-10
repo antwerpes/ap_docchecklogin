@@ -33,20 +33,20 @@ $EM_CONF[$_EXTKEY] = array (
 	'CGLcompliance' => NULL,
 	'CGLcompliance_note' => NULL,
 	'constraints' => 
-	array (
-		'conflicts' => 
 		array (
-			0 => 'kb_md5fepw',
-			1 => 'tgr_doccheck'
+			'conflicts' =>
+				array (
+					0 => 'kb_md5fepw',
+					1 => 'tgr_doccheck'
+				),
+			'depends' =>
+				array (
+					'typo3' => '6.0.0-6.1.99'
+				),
+			'suggests' =>
+				array (
+				),
 		),
-		'depends' => 
-		array (
-			'' => '',
-		),
-		'suggests' => 
-		array (
-		),
-	),
 );
 
 ?>
