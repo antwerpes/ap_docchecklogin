@@ -1,6 +1,8 @@
 Copyright notice
 
-(c) 2013 Lukas Domnick, antwerpes ag <lukas.domnick@antwerpes.de>
+(c) 2013 antwerpes ag <opensource@antwerpes.de>
+See contributors list at https://github.com/antwerpes/ap_docchecklogin/graphs/contributors
+
 All rights reserved
 
 The TYPO3 Extension ap_docchecklogin is licensed under the MIT License.

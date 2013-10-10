@@ -5,7 +5,7 @@ namespace Antwerpes\ApDocchecklogin;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Lukas Domnick, antwerpes ag <lukas.domnick@antwerpes.de>
+ *  (c) 2013 antwerpes ag <opensource@antwerpes.de>
  *  All rights reserved
  *
  *  The TYPO3 Extension ap_docchecklogin is licensed under the MIT License
@@ -96,7 +96,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		// 100 - Just go on. User is not authenticated but there's still no reason to stop.
 		// false - this service was the right one to authenticate the user but it failed
 		// true - this service was able to authenticate the user
-
 
 		// check whether the user is the dummy user
 		if( $user['pid'] !== $this->extConf['dummyUserPid'] || $user['username'] !== $this->extConf['dummyUser']) {

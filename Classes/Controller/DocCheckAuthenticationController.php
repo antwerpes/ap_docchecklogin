@@ -5,7 +5,7 @@ namespace Antwerpes\ApDocchecklogin\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Lukas Domnick, antwerpes ag <lukas.domnick@antwerpes.de>
+ *  (c) 2013 antwerpes ag <opensource@antwerpes.de>
  *  All rights reserved
  *
  *  The TYPO3 Extension ap_docchecklogin is licensed under the MIT License
