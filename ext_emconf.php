@@ -36,8 +36,8 @@ $EM_CONF[$_EXTKEY] = array (
 		array (
 			'conflicts' =>
 				array (
-					0 => 'kb_md5fepw',
-					1 => 'tgr_doccheck'
+					'kb_md5fepw' => '',
+					'tgr_doccheck' => ''
 				),
 			'depends' =>
 				array (
