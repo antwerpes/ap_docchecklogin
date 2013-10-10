@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array (
 	'title' => 'DocCheck Login',
-	'description' => 'Integrate DocCheck Login',
+	'description' => 'Official DocCheck Login Extension for Typo3 6.x',
 	'category' => 'plugin',
 	'shy' => 0,
 	'version' => '1.0.1',
