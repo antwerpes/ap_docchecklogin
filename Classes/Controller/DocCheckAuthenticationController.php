@@ -73,18 +73,62 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 	function loggedInAction() {
 		// if the settings tell us to redirect on a successful login, do so now.
 		if( $GLOBALS['ap_docchecklogin_do_redirect'] === true ) {
-			$redirectToPid = $GLOBALS['TSFE']->fe_user->user['felogin_redirectPid'];
-			//echo $this->uriBuilder->setTargetPageUid(10)->build();
+
+			// user configuration takes precedence
+			$redirectToPid = $this->getUserRedirectPid();
+			// only bother fetching the group redirect config if no user user-level config was found
+			if( !$redirectToPid ) {
+				$redirectToPid = $this->getGroupRedirectPid();
+			}
+
+			// reset the do_redirect flag
 			$GLOBALS['ap_docchecklogin_do_redirect'] = false;
 
-			// this way works better than $this->redirect(), which will always add some bullshit params
-			$redirectUri = $this->uriBuilder->reset()->setTargetPageUid($redirectToPid)->setCreateAbsoluteUri(TRUE)->build();
-			$this->redirectToUri($redirectUri);
+			// aight, so did we find a page id to redirect to?
+			if( $redirectToPid ) {
+				// this way works better than $this->redirect(), which will always add some bullshit params
+				$redirectUri = $this->uriBuilder->reset()->setTargetPageUid($redirectToPid)->setCreateAbsoluteUri(TRUE)->build();
+				$this->redirectToUri($redirectUri);
+			}
 
-			$this->view;
 			return;
 
 		}
+	}
+
+
+	/**
+	 * Tries to get a redirect configuration (Page ID) for the current user.
+	 *
+	 * @return int|null Page ID
+	 */
+	function getUserRedirectPid() {
+		$redirectToPid = $GLOBALS['TSFE']->fe_user->user['felogin_redirectPid'];
+		if( !$redirectToPid ){
+			return null;
+		}
+		return $redirectToPid;
+	}
+
+	/**
+	 * Tries to get a redirect configuration (Page ID) for the current user's primary group.
+	 *
+	 * @return int|null Page ID
+	 */
+	function getGroupRedirectPid() {
+		$groupData = $GLOBALS['TSFE']->fe_user->groupData;
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+			'felogin_redirectPid',
+			$GLOBALS['TSFE']->fe_user->usergroup_table,
+			'felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')'
+		);
+
+		if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
+			// take the first group with a redirect page
+			return $row[0];
+		}
+
+		return null;
 	}
 
 	function loginFormAction() {
