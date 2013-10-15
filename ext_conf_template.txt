@@ -1,8 +1,18 @@
-# cat=basic/enable; type=string; label=Expected Value of the dc get Parameter. Use this for increased security in your Redirect-After-Login-Setting in DocCheck CReaM
+# cat=basic/enable; type=string; label=Expected Value of the dc get Parameter:Overridden by the routing feature
 dcParam = 1
-# cat=basic/enable; type=string; label=User Name of the dummy user to be used with the DocCheck Authentication Service.
+# cat=basic/enable; type=string; label=User Name of the dummy user to be used with the DocCheck Authentication Service.:Not used with uniquekey.
 dummyUser =
-# cat=basic/enable; type=int; label=UID of the page where the dummy user is stored
+# cat=basic/enable; type=int; label=UID of the page where the dummy user or the user group(s) is stored
 dummyUserPid = 0
-# cat=basic/enable; type=int; label=Use fe_user redirect after login-Feature. Allows you to set a target URL in the Dummy User's Config when fe_login is enabled. 1|0
+# cat=basic/enable; type=boolean; label=Use fe_user redirect after login-Feature. Allows you to set a target URL in the Dummy User's Config when fe_login is enabled. 1|0
 useFeLoginRedirect = 1
+# cat=uniquekey/enable; type=boolean; label=Enable the DocCheck UniqueKey-Feature:Creates one Typo3 FE User per Unique Key. Paid DocCheck license required.
+uniqueKeyEnable = 0
+# cat=uniquekey/enable; type=int; label=Group ID for the generated Unique Key Users:Overridden by routing feature. Group must be found in basic.dummyUserPid
+uniqueKeyGroup =
+# cat=uniquekey/enable; type=boolean; label=Add DocCheck Personal data transmitted by DocCheck Personal to the generated user
+dcPersonalEnable = 0
+# cat=routing/enable; type=boolean; label=Use Routing Feature to route different Values for the "dc" param to different User Groups:Only in combination with uniqueKey, overrides basic.dcParam and uniquekey.uniqueKeyGroup
+routingEnable = 0
+# cat=routing/enable; type=string; label=Routing Map:groupId=paramVal,groupId2=paramVal2,...
+routingMap =
