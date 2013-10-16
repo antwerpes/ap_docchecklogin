@@ -149,7 +149,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 			'dc_plz' => 'zip',
 			'dc_ort' => 'city',
 			'dc_land' => 'country',
-			'dc_email' => 'email'
+			'dc_email' => 'email',
+			// doccheck profession and discipline: see the official technical documentation at https://crm.doccheck.com/
+			'dc_beruf' => 'tx_apdocchecklogin_prof',
+			'dc_fachgebiet' => 'tx_apdocchecklogin_disc'
 		);
 
 		$updateArr = array();
@@ -166,23 +169,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 			// save the changes to db
 			$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
 		}
-
-	/*		[dc] => 299
-		[logintype] => login
-		[dc_anrede] => Herr
-		[dc_gender] => m
-		[dc_titel] =>
-		[dc_name] => Domnick
-		[dc_strasse] => Vogelsanger Stra�e 144
-		[dc_plz] => 50823
-		[dc_ort] => K�ln
-		[dc_land] => DE
-		[dc_beruf] => 61
-		[dc_fachgebiet] => 1045
-		[dc_email] => lukas.domnick@antwerpes.de
-		[uniquekey] => 1178a74d08e7e027ee35e905ab927b26
-		[dc_timestamp] => 1381758200
-	)*/
 
 		return $user;
 	}
