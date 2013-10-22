@@ -1,8 +1,8 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	'Antwerpes.'.$_EXTKEY,
+Tx_Extbase_Utility_Extension::configurePlugin(
+	$_EXTKEY,
 	'DocCheckAuthentication',
 	array(
 		'DocCheckAuthentication' => 'main, loggedIn, loginForm',
@@ -14,7 +14,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 );
 
 // Add the service
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService($_EXTKEY, 'auth', 'Antwerpes\\ApDocchecklogin\\DocCheckAuthenticationService', array(
+t3lib_extMgm::addService($_EXTKEY, 'auth', 'Tx_ApDocchecklogin_DocCheckAuthenticationService', array(
 	'title' => 'DocCheck Authentication Service',
 	'description' => 'Authenticates users through the DocCheck Authentication Service',
 	'subtype' => 'getUserFE,authUserFE',
@@ -23,5 +23,6 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	'quality' => 60,
 	'os' => '',
 	'exec' => '',
-	'className' => 'Antwerpes\\ApDocchecklogin\\DocCheckAuthenticationService'
+	'classFile' => t3lib_extMgm::extPath($_EXTKEY).'Classes/DocCheckAuthenticationService.php',
+	'className' => 'Tx_ApDocchecklogin_DocCheckAuthenticationService'
 ));

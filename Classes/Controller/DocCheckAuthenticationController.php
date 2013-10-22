@@ -1,7 +1,5 @@
 <?php
 
-namespace Antwerpes\ApDocchecklogin\Controller;
-
 /***************************************************************
  *  Copyright notice
  *
@@ -37,32 +35,11 @@ namespace Antwerpes\ApDocchecklogin\Controller;
  *
  * @author	Lukas Domnick <lukas.domnick@antwerpes.de>
  */
-class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
-
-	/**
-	 * @var \TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository
-	 * @inject
-	 */
-	protected $frontendUserRepository;
-
-	/**
-	 * @var \TYPO3\CMS\Extbase\Domain\Model\FrontendUser
-	 */
-	protected $feUser;
-
-	public function initializeObject() {
-		$this->initializeFeUser();
-	}
-
-	protected function initializeFeUser() {
-		$userId = $GLOBALS['TSFE']->fe_user->user['uid'];
-		$this->feUser = $this->frontendUserRepository->findByUid( $userId );
-	}
-
+class Tx_ApDocchecklogin_Controller_DocCheckAuthenticationController extends Tx_Extbase_MVC_Controller_ActionController {
 
 	function mainAction() {
 		// is logged in?
-		if( $this->feUser ) {
+		if( $GLOBALS['TSFE']->fe_user->user ) {
 			$this->forward('loggedIn');
 		} else {
 			// not logged in, do redirect the user

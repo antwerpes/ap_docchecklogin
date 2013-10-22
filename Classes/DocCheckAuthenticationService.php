@@ -1,7 +1,5 @@
 <?php
 
-namespace Antwerpes\ApDocchecklogin;
-
 /***************************************************************
  *  Copyright notice
  *
@@ -30,7 +28,6 @@ namespace Antwerpes\ApDocchecklogin;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 
 /**
@@ -39,7 +36,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * @author	Lukas Domnick <lukas.domnick@antwerpes.de>
  */
 
-class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
+class Tx_ApDocchecklogin_DocCheckAuthenticationService extends tx_sv_authbase {
 	protected $extConf = array();
 
 	public function __construct() {
@@ -61,13 +58,13 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		$dummyUserName = $this->extConf['dummyUser'];
 
 		if(!$dummyUserName) {
-			throw new \Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
+			throw new Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
 		}
 
 		$user = $this->fetchUserRecord( $dummyUserName );
 
 		if ( !$user ) {
-			throw new \Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid'] );
+			throw new Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid'] );
 		}
 
 		return $user;
@@ -81,7 +78,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 */
 	private function getUniqueUser( $uniqKey, $dcVal ) {
 		if( !$this->isValidMd5($uniqKey)) {
-			throw new \Exception('DocCheck Authentication: unique key is not valid.');
+			throw new Exception('DocCheck Authentication: unique key is not valid.');
 		}
 		$group = $this->getUniqueUserGroupId($dcVal);
 
@@ -101,7 +98,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 			return $userObject;
 		}
 
-		throw new \Exception('DocCheck Authentication: Could not find or create an automated fe_user' );
+		throw new Exception('DocCheck Authentication: Could not find or create an automated fe_user' );
 	}
 
 	private function createUserRecord($username, $group, $pid ) {
@@ -188,12 +185,12 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 			$grp = $this->getRoutedGroupId($dcVal);
 			if( !$grp ) {
 				// error, because no group is set to match the given $_GET['dc'] parameter.
-				throw new \Exception('DocCheck Authentication: No suitable routing found.' );
+				throw new Exception('DocCheck Authentication: No suitable routing found.' );
 			}
 		} else {
 			$grp = $this->extConf['uniqueKeyGroup'];
 			if( !$grp ) {
-				throw new \Exception('DocCheck Authentication: No uniqueKeyGroup set.' );
+				throw new Exception('DocCheck Authentication: No uniqueKeyGroup set.' );
 			}
 		}
 
@@ -202,7 +199,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
 		if( false === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid']) ) {
 			// whoops, no group found
-			throw new \Exception('DocCheck Authentication: Could not find front end user group ' . $grp );
+			throw new Exception('DocCheck Authentication: Could not find front end user group ' . $grp );
 		}
 
 		return $grp;
