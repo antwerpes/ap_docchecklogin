@@ -1,6 +1,6 @@
 Copyright notice
 
-(c) 2013 antwerpes ag <opensource@antwerpes.de>
+(c) 2014 antwerpes ag <opensource@antwerpes.de>
 See contributors list at https://github.com/antwerpes/ap_docchecklogin/graphs/contributors
 
 All rights reserved
