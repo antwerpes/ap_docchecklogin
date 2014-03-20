@@ -71,29 +71,29 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 	}
 
 	function loggedInAction() {
-		// if the settings tell us to redirect on a successful login, do so now.
-		if( $GLOBALS['ap_docchecklogin_do_redirect'] === true ) {
+        // if the settings tell us to redirect on a successful login, do so now.
+        if( $GLOBALS['ap_docchecklogin_do_redirect'] === true ) {
 
-			// user configuration takes precedence
-			$redirectToPid = $this->getUserRedirectPid();
-			// only bother fetching the group redirect config if no user user-level config was found
-			if( !$redirectToPid ) {
-				$redirectToPid = $this->getGroupRedirectPid();
-			}
+            // reset the do_redirect flag
+            $GLOBALS['ap_docchecklogin_do_redirect'] = false;
 
-			// reset the do_redirect flag
-			$GLOBALS['ap_docchecklogin_do_redirect'] = false;
+            // user configuration takes precedence
+            $redirectToUri = $this->getRedirectUriFromCookie();
+            // only bother fetching the group redirect config if no user user-level config was found
+            if( !$redirectToUri ) {
+                $redirectToUri = $this->getRedirectUriFromFeLogin();
+            }
+            // aight, so did we find a page id to redirect to?
+            if( $redirectToUri ) {
+                // this way works better than $this->redirect(), which will always add some bullshit params
+                if( stripos($redirectToUri, '/') === 0) {
+                    $redirectToUri = substr($redirectToUri,1);
+                }
 
-			// aight, so did we find a page id to redirect to?
-			if( $redirectToPid ) {
-				// this way works better than $this->redirect(), which will always add some bullshit params
-				$redirectUri = $this->uriBuilder->reset()->setTargetPageUid($redirectToPid)->setCreateAbsoluteUri(TRUE)->build();
-				$this->redirectToUri($redirectUri);
-			}
-
-			return;
-
-		}
+                $this->redirectToUri($redirectToUri);
+            }
+            return;
+        }
 	}
 
 
@@ -132,7 +132,17 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 	}
 
 	function loginFormAction() {
-		// most settings are injected implicitly, but a custom login template must be checked briefly
+        // set a redirect cookie, if a redirect_url GET Param is set
+        $redirectUrl = $_GET['redirect_url'];
+        if( $redirectUrl ) {
+            // store as cookie and expire in 10 minutes
+            setcookie('ap_docchecklogin_redirect', $redirectUrl, intval(gmdate('U')) + 600, '/');
+        } else {
+            // delete an older cookie if no longer needed
+            setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
+        }
+
+        // most settings are injected implicitly, but a custom login template must be checked briefly
 		if( $this->settings['loginLayout'] === 'custom' ) {
 			$templateKey = $this->settings['customLayout'];
 		} else {
@@ -141,4 +151,32 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 
 		$this->view->assign('templateKey', $templateKey);
 	}
+
+    function getRedirectUriFromCookie() {
+        if( array_key_exists('ap_docchecklogin_redirect', $_COOKIE) ) {
+            // clear the cookie
+            $redirectUri = $_COOKIE['ap_docchecklogin_redirect'];
+            setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
+
+            return $redirectUri;
+        }
+
+        return null;
+    }
+
+    function getRedirectUriFromFeLogin() {
+        // user configuration takes precedence
+        $redirectToPid = $this->getUserRedirectPid();
+        $redirectUri = null;
+        // only bother fetching the group redirect config if no user user-level config was found
+        if( !$redirectToPid ) {
+            $redirectToPid = $this->getGroupRedirectPid();
+        }
+
+        if( $redirectToPid ) {
+            $redirectUri = $this->uriBuilder->reset()->setTargetPageUid($redirectToPid)->setCreateAbsoluteUri(TRUE)->build();
+        }
+
+        return $redirectUri;
+    }
 }
