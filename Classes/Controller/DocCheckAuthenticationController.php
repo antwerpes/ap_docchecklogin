@@ -77,9 +77,9 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
             // reset the do_redirect flag
             $GLOBALS['ap_docchecklogin_do_redirect'] = false;
 
-            // user configuration takes precedence
+            // a ?redirect_url -Parameter takes precedence
             $redirectToUri = $this->getRedirectUriFromCookie();
-            // only bother fetching the group redirect config if no user user-level config was found
+            // alternatively, get redirect conf from user or user group config
             if( !$redirectToUri ) {
                 $redirectToUri = $this->getRedirectUriFromFeLogin();
             }
