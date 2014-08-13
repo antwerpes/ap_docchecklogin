@@ -33,7 +33,7 @@ DocCheck Login
 		2014
 
 	:Author:
-		antwerpes ag
+		Lukas Domnick, antwerpes ag
 
 	:Email:
 		opensource@antwerpes.de
@@ -68,6 +68,7 @@ DocCheck Login
 	Introduction/Index
 	AdministratorManual/Index
 	Configuration/Index
+	Hooks/Index
 	KnownProblems/Index
 	ToDoList/Index
 	ChangeLog/Index

@@ -3,7 +3,7 @@
 /***************************************************************
  * Extension Manager/Repository config file for ext "ap_docchecklogin".
  *
- * Auto generated 03-09-2013 12:40
+ * Auto generated 18-07-2014 10:31
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -14,18 +14,18 @@ $EM_CONF[$_EXTKEY] = array (
 	'title' => 'DocCheck Login',
 	'description' => 'Official DocCheck Login Extension for Typo3 6.x',
 	'category' => 'plugin',
-	'shy' => 0,
-	'version' => '1.0.7',
+	'shy' => false,
+	'version' => '1.0.8',
 	'dependencies' => 'extbase,fluid',
 	'conflicts' => 'tgr_doccheck,kb_md5fepw',
 	'priority' => '',
 	'loadOrder' => '',
 	'module' => '',
 	'state' => 'beta',
-	'uploadfolder' => 0,
+	'uploadfolder' => false,
 	'createDirs' => '',
 	'modify_tables' => '',
-	'clearcacheonload' => 0,
+	'clearcacheonload' => false,
 	'lockType' => '',
 	'author' => 'antwerpes ag - see README.txt',
 	'author_email' => 'opensource@antwerpes.de',
@@ -34,20 +34,22 @@ $EM_CONF[$_EXTKEY] = array (
 	'CGLcompliance_note' => NULL,
 	'constraints' => 
 		array (
-			'conflicts' =>
+			'conflicts' => 
 				array (
 					'kb_md5fepw' => '',
-					'tgr_doccheck' => ''
+					'tgr_doccheck' => '',
 				),
-			'depends' =>
+			'depends' => 
 				array (
 					'php' => '5.3.0-0.0.0',
 					'typo3' => '6.0.0-6.2.99',
 					'extbase' => '0.0.0-0.0.0',
-					'fluid' => '0.0.0-0.0.0'
+					'fluid' => '0.0.0-0.0.0',
 				),
-			'suggests' =>
+			'suggests' => 
 				array (
 				),
 		),
 );
+
+?>

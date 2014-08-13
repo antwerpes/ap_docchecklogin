@@ -1,3 +1,7 @@
+1.0.8
+Implemented a beforeRedirect Hook and SignalSlot
+Fixed a bug determining whether a FE User is available
+===
 1.0.7
 Typo3 6.2 compatibility
 and learn to respect the ?redirect_url - Parameter just as fe_login would

@@ -1,7 +1,6 @@
 <?php
 
 namespace Antwerpes\ApDocchecklogin;
-
 /***************************************************************
  *  Copyright notice
  *
@@ -30,8 +29,6 @@ namespace Antwerpes\ApDocchecklogin;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-
 
 /**
  * Service 'DocCheckAuthenticationService' for the 'ap_docchecklogin' extension.
@@ -76,10 +73,13 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	/**
 	 * Fetch or create a unique user.
 	 *
-	 * @param $uniqKey
-	 * @param $dcVal for routing, if wanted
+	 * @param $uniqKey string
+	 * @param $dcVal string for routing, if wanted
+	 *
+	 * @return array user array
+	 * @throws \Exception
 	 */
-	private function getUniqueUser( $uniqKey, $dcVal ) {
+	protected function getUniqueUser( $uniqKey, $dcVal ) {
 		if( !$this->isValidMd5($uniqKey)) {
 			throw new \Exception('DocCheck Authentication: unique key is not valid.');
 		}
@@ -97,20 +97,26 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
 		$userObject = $this->createUserRecord($username, $group, $this->extConf['dummyUserPid']);
 		if( $userObject ) {
-			// cool, we know you already? nice!
+			// cool, you were created.
 			return $userObject;
 		}
 
 		throw new \Exception('DocCheck Authentication: Could not find or create an automated fe_user' );
 	}
 
-	private function createUserRecord($username, $group, $pid ) {
+	/**
+	 * @param $username string the username (generated)
+	 * @param $group int group id
+	 * @param $pid int page id where the user record is created
+	 * @return array User or FALSE
+	 */
+	protected function createUserRecord($username, $group, $pid ) {
 		$dbUser = $this->db_user;
 		$insertArray = array();
 
 		$insertArray[ $dbUser['username_column']] = $username;
 		$insertArray['pid'] = $pid;
-		$insertArray[ $dbUser['usergroup_column']] = $group;
+		$insertArray[ $dbUser['usergroup_column'] ] = $group;
 		$insertArray['crdate'] = $insertArray['tstamp'] = time();
 
 		// add a salted random password
@@ -126,9 +132,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	/**
 	 * generate a user name for this unique key. Just adds a prefix, actually, for now.
 	 *
-	 * @param $uniqKey
+	 * @param $uniqKey string
+	 * @return string
 	 */
-	private function generateUserNameFromUniqueKey($uniqKey) {
+	protected function generateUserNameFromUniqueKey($uniqKey) {
 		return 'dc_' . $uniqKey;
 	}
 
@@ -136,9 +143,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	/**
 	 * If DocCheck Personal parameters are detected, add them to the user object.
 	 *
-	 * @param $user User
+	 * @param $user array the user record
+	 * @return array the updated user record
 	 */
-	private function augmentDcPersonal($user) {
+	protected function augmentDcPersonal($user) {
 
 		$paramMapping =  array(
 			// dc => typo3
@@ -178,10 +186,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 * - in combination with the routing feature, a resolved group id.
 	 *
 	 * @param $dcVal
-	 * @return int
-	 * @throws \ErrorException
+	 * @return int group id
+	 * @throws \Exception
 	 */
-	private function getUniqueUserGroupId( $dcVal ) {
+	protected function getUniqueUserGroupId( $dcVal ) {
 
 		// is routing enabled?
 		if( $this->extConf['routingEnable']) {
@@ -200,7 +208,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		// cast as int
 		$grp = intval($grp, 10);
 
-		if( false === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid']) ) {
+		if( null === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid']) ) {
 			// whoops, no group found
 			throw new \Exception('DocCheck Authentication: Could not find front end user group ' . $grp );
 		}
@@ -212,17 +220,17 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	/**
 	 * Fetch the group record for a given id, on a specific PID
 	 *
-	 * @param $groupId
-	 * @param $pid
-	 * @return bool
+	 * @param $groupId int
+	 * @param $pid int Page ID where the group is stored
+	 * @return array group record, or null if no matching group was found
 	 */
-	private function fetchGroupRecord($groupId, $pid )   {
+	protected function fetchGroupRecord($groupId, $pid )   {
 
 		if( !is_integer($groupId) || 0 === $groupId ) {
-			return false;
+			return null;
 		}
 
-		$group = FALSE;
+		$group = null;
 
 		$dbGroups = $this->db_groups;
 
@@ -247,10 +255,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	/**
 	 * Read the routing map and find a suitable group id for this user
 	 *
-	 * @param $dcVal
-	 * @return null
+	 * @param $dcVal string
+	 * @return int ID of the associated group, or null if none found
 	 */
-	private function getRoutedGroupId($dcVal) {
+	protected function getRoutedGroupId($dcVal) {
 		// first, explode the route map
 		$routingMapStr = $this->extConf['routingMap'];
 		$routingMapStr = explode(',',$routingMapStr);
@@ -263,7 +271,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		return null;
 	}
 
-	private function isValidMd5( $md5 ) {
+	protected function isValidMd5( $md5 ) {
 		return !empty($md5) && preg_match('/^[a-f0-9]{32}$/', $md5);
 	}
 
@@ -297,7 +305,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 * Authenticate a user
 	 * Return 200 if the DocCheck Login is okay. This means that no more checks are needed. Otherwise authentication may fail because we may don't have a password.
 	 *
-	 * @param	array 	Data of user.
+	 * @param	$user array Data of user.
 	 * @return	boolean|200|100
 	 */
 	function authUser($user) {
@@ -315,12 +323,14 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		} else {
 			$ok = $this->authUniqueUser($user, $dcVal);
 		}
-
 		// cool, some auth method thought it's fine. Quickly configure the redirect feature.
 		if( $ok === 200 ) {
 			if( $this->extConf['useFeLoginRedirect'] === '1' ) {
 				// TODO: Find a better place to store this bit of information
 				$GLOBALS['ap_docchecklogin_do_redirect'] = true;
+
+				$hookParams = array( 'user' => $user, 'ok' => $ok );
+				$ok = $hookParams['ok'];
 			}
 		}
 
@@ -333,8 +343,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 * ... the dummy may sign in with this dc-param
 	 *
 	 * @param $user
+	 * @param string
+	 * @return boolean|100|200
 	 */
-	private function authDummyUser($user, $dcVal) {
+	protected function authDummyUser($user, $dcVal) {
 		if( !$this->isDummyUser( $user )) {
 			// oops, not the dummy user. Try other auth methods.
 			return 100;
@@ -350,7 +362,10 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		}
 	}
 
-	private function authUniqueUser($user, $dcVal) {
+	/**
+	 *
+	 */
+	protected function authUniqueUser($user, $dcVal) {
 		if( !$this->isUniqueUser($user)) {
 			// not a unique user, try other auth methods.
 			return 100;
@@ -377,8 +392,9 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 * Find out whether a given user is the dummy (non-unique)
 	 *
 	 * @param $user
+	 * @return boolean
 	 */
-	private function isDummyUser($user) {
+	protected function isDummyUser($user) {
 		// wait, are we supposed to use unique key? then how can this be a dummy user?
 		if( $this->extConf['uniqueKeyEnable'] ) {
 			return false;
@@ -392,8 +408,9 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 	 * Detect whether a given user has been generated by this extension
 	 *
 	 * @param $user
+	 * @return boolean
 	 */
-	private function isUniqueUser($user) {
+	protected function isUniqueUser($user) {
 		// if uniquekey is not even enabled, this can't be a unique key user.
 		if( !$this->extConf['uniqueKeyEnable'] ) {
 			return false;
@@ -411,4 +428,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
 		return true;
 	}
+
+
 }
