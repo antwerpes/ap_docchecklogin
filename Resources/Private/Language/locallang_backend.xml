@@ -32,6 +32,8 @@
 			<label index="flexform.language.benl">Dutch (Belgium)</label>
 			<label index="flexform.language.nl">Dutch (Netherlands)</label>
 			<label index="flexform.language.es">Spanish (Spain)</label>
+
+			<label index="flexform.redirect">Redirect after Login (will be overridden by ?redirect_url)</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="pluginName">DocCheck Login</label>
@@ -59,6 +61,8 @@
 			<label index="flexform.language.benl">Niederländisch (Belgien)</label>
 			<label index="flexform.language.nl">Niederländisch (Niederlande)</label>
 			<label index="flexform.language.es">Spanisch (Spanien)</label>
+
+			<label index="flexform.redirect">Weiterleitung nach Login (wird von ?redirect_url überschrieben)</label>
 		</languageKey>
 	</data>
 </T3locallang>

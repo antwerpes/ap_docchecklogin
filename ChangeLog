@@ -1,3 +1,6 @@
+1.0.10
+Added the option to set redirect-after-login from the frontend.
+===
 1.0.9
 Enabled "clearcacheonload" to fix cache issues.
 ===

@@ -137,6 +137,10 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 	function loginFormAction() {
 		// set a redirect cookie, if a redirect_url GET Param is set
 		$redirectUrl = $_GET['redirect_url'];
+		// ... or if the redirect-option is chosen in the plugin
+		if( !$redirectUrl && $this->settings['redirect'] ) {
+			$redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])->setCreateAbsoluteUri(TRUE)->build();
+		}
 		if( $redirectUrl ) {
 			// store as cookie and expire in 10 minutes
 			setcookie('ap_docchecklogin_redirect', $redirectUrl, intval(gmdate('U')) + 600, '/');
