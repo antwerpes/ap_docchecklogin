@@ -7,7 +7,11 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	'LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:pluginName'
 );
 
-t3lib_div::loadTCA('tt_content');
+if (version_compare(TYPO3_branch, '6.1', '<')) {
+    t3lib_div::loadTCA('tt_content');
+} else if (version_compare(TYPO3_branch, '7.0', '<')) {
+    \TYPO3\CMS\Core\Utility\GeneralUtility::loadTCA('tt_content');
+}
 
 $pluginSignature = 'apdocchecklogin_doccheckauthentication';
 
