@@ -139,7 +139,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 		$redirectUrl = $_GET['redirect_url'];
 		// ... or if the redirect-option is chosen in the plugin
 		if( !$redirectUrl && $this->settings['redirect'] ) {
-			$redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])->setCreateAbsoluteUri(TRUE)->build();
+			$redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])->setLinkAccessRestrictedPages(true)->setCreateAbsoluteUri(TRUE)->build();
 		}
 		if( $redirectUrl ) {
 			// store as cookie and expire in 10 minutes
