@@ -1,0 +1,16 @@
+plugin.tx_apdocchecklogin {
+    view {
+        layoutRootPaths {
+            0 = EXT:ap_docchecklogin/Resources/Private/Layouts/
+            1 = {$plugin.tx_apdocchecklogin.view.layoutRootPath}
+        }
+        partialRootPaths {
+            0 = EXT:ap_docchecklogin/Resources/Private/Partials/
+            1 = {$plugin.tx_apdocchecklogin.view.partialRootPath}
+        }
+        templateRootPaths {
+            0 = EXT:ap_docchecklogin/Resources/Private/Templates/
+            1 = {$plugin.tx_apdocchecklogin.view.templateRootPath}
+        }
+    }
+}
