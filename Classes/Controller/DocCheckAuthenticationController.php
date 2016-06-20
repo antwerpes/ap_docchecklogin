@@ -149,6 +149,12 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 			setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
 		}
 
+		$loginId = $this->settings['loginId'];
+		// override given loginId if loginOverrideId is set
+		if( $this->settings['loginOverrideId'] ) {
+			$loginId = $this->settings['loginOverrideId'];
+		}
+
 		// most settings are injected implicitly, but a custom login template must be checked briefly
 		if( $this->settings['loginLayout'] === 'custom' ) {
 			$templateKey = $this->settings['customLayout'];
@@ -156,6 +162,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 			$templateKey = $this->settings['loginLayout'] . '_red';
 		}
 
+		$this->view->assign('loginId', $loginId);
 		$this->view->assign('templateKey', $templateKey);
 	}
 
