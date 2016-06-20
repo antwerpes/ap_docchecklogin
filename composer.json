@@ -1,0 +1,13 @@
+{
+    "name": "antwerpes/ap_docchecklogin",
+    "description": "Official DocCheck Login Extension for Typo3 6.x to 7.6.x",
+    "type": "typo3-cms-extension",
+    "version": "1.0.13",
+    "autoload": {
+        "psr-4": {
+            "Antwerpes\\ApDocchecklogin\\": "Classes/"
+        }
+    },
+    "require": {
+    }
+}

@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'description' => 'Official DocCheck Login Extension for Typo3 6.x',
 	'category' => 'plugin',
 	'shy' => false,
-	'version' => '1.0.10',
+	'version' => '1.0.13',
 	'dependencies' => 'extbase,fluid',
 	'conflicts' => 'tgr_doccheck,kb_md5fepw',
 	'priority' => '',
@@ -42,7 +42,7 @@ $EM_CONF[$_EXTKEY] = array (
 			'depends' => 
 				array (
 					'php' => '5.3.0-0.0.0',
-					'typo3' => '6.0.0-6.2.99',
+					'typo3' => '6.0.0-7.6.99',
 					'extbase' => '0.0.0-0.0.0',
 					'fluid' => '0.0.0-0.0.0',
 				),

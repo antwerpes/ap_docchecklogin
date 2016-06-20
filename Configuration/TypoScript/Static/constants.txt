@@ -1,0 +1,10 @@
+plugin.tx_apdocchecklogin {
+    view {
+        # cat=plugin.tx_tx_apdocchecklogin/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:ap_docchecklogin/Resources/Private/Templates/
+        # cat=plugin.tx_tx_apdocchecklogin/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:ap_docchecklogin/Resources/Private/Partials/
+        # cat=plugin.tx_tx_apdocchecklogin/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:ap_docchecklogin/Resources/Private/Layouts/
+    }
+}
