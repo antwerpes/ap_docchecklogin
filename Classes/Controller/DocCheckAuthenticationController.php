@@ -151,7 +151,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
 
 		$loginId = $this->settings['loginId'];
 		// override given loginId if loginOverrideId is set
-		if( $this->settings['loginOverrideId'] ) {
+		if( is_numeric ( $this->settings['loginOverrideId'] ) ) {
 			$loginId = $this->settings['loginOverrideId'];
 		}
 
