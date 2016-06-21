@@ -1,3 +1,7 @@
+1.1.0
+Added Typo3 7.6 compatibility (https://github.com/antwerpes/ap_docchecklogin/pull/6)
+Added optional loginId override via TypoScript
+===
 1.0.10
 Added the option to set redirect-after-login from the frontend.
 ===

@@ -108,6 +108,9 @@ Basic Configuration
 		dummy user's properties. If set, the user will be redirected to that
 		target after login. Requires felogin, I think.
 
+		The Login target page in DocCheck Cream has to be configured to a page
+		which includes the DocCheck Login-Plugin for the redirect action to take place.
+
 .. _uniquekeyconf:
 		
 UniqueKey Configuration
@@ -225,3 +228,40 @@ Routing Configuration
 		
 		Now, when a user is routed to the URL with ?dc=1337, a frontend
 		user will be created and added to the group #2. You get the drill.
+
+.. _settingsconf:
+
+Settings Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. t3-field-list-table::
+ :header-rows: 1
+
+ - :Property,30:
+		Property:
+
+   :Data type,10:
+		Data type:
+
+   :Description,60:
+		Description:
+
+
+ - :Property:
+		settings.loginOverrideId
+
+   :Data type:
+		string
+
+   :Description:
+		**Override Login ID.**
+
+		This numeric parameter overrides the used Doccheck Login ID.
+		Especially useful for working in multiple environments.
+
+		**Example:**
+		::
+
+			[globalString = IENV:HTTP_HOST = stage.domain.com]
+				plugin.tx_apdocchecklogin.settings.loginOverrideId = 1111111111
+			[global]
