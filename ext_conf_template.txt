@@ -16,3 +16,9 @@ dcPersonalEnable = 0
 routingEnable = 0
 # cat=routing/enable; type=string; label=Routing Map:groupId=paramVal,groupId2=paramVal2,...
 routingMap =
+# cat=crawling/enable; type=int; label=Enabled crawling for DocCheck
+crawlingEnable = 0
+# cat=crawling/enable; type=string; label=User Name of the dummy user to be used for crawling.
+crawlingUser =
+# cat=crawling/enable; type=string; label=DocCheck Crawler IP
+crawlingIP =

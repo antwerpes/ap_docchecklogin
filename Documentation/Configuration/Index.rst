@@ -225,3 +225,42 @@ Routing Configuration
 		
 		Now, when a user is routed to the URL with ?dc=1337, a frontend
 		user will be created and added to the group #2. You get the drill.
+
+.. _crawlerconf:
+
+Crawler Configuration
+^^^^^^^^^^^^^^^^^^^^^
+
+.. t3-field-list-table::
+ :header-rows: 1
+
+ - :Property,30:
+		Property:
+
+   :Data type,10:
+			Data type:
+
+	   :Description,60:
+			Description:
+
+
+	 - :Property:
+			crawling.crawlingEnable
+
+	   :Data type:
+			boolean *(def.: false)*
+
+   :Description:
+			**Enable the DocCheck Crawler feature.**
+
+		Enable the possibility to bypass the DocCheck Login for the DocCheck crawler.
+		This requires you to set the correct DocCheck Crawler IP and an existing Website User in Typo3.
+
+ - :Property:
+		crawling.crawlingUser
+
+   :Data type:
+			string
+
+	   :Description:
+			**The User that has access to protected urls.**

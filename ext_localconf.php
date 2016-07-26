@@ -25,3 +25,5 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 	'exec' => '',
 	'className' => 'Antwerpes\\ApDocchecklogin\\DocCheckAuthenticationService'
 ));
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_fe.php']['initFEuser'][] = 'EXT:ap_docchecklogin/Classes/DocCheckAuthenticationService.php:&Antwerpes\ApDocchecklogin\DocCheckAuthenticationService->bypassLoginForCrawling';
