@@ -51,6 +51,40 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 		parent::initAuth($mode, $loginData, $authInfo, $pObj );
 	}
 
+    /**
+     * Bypass login for crawling.
+     *
+     * @throws \Exception
+     */
+    public function bypassLoginForCrawling() {
+        // No crawling.
+        if (!$this->extConf['crawlingEnable']) {
+            return;
+        }
+
+        // Crawler IP
+        $crawlingIP = $this->extConf['crawlingIP'];
+        if (!$crawlingIP) {
+            throw new \Exception('DocCheck Authentication: No DocCheck Crawler IP specified in Extension settings');
+        }
+
+        // IP not matching
+        if ($_SERVER['REMOTE_ADDR'] !== $crawlingIP) {
+            return;
+        }
+
+        // Crawler user.
+        $crawlingUserName = $this->extConf['crawlingUser'];
+        if (!$crawlingUserName) {
+            $crawlingUserName = $this->extConf['dummyUser'];
+        }
+
+        $GLOBALS['TSFE']->fe_user->createUserSession(array());
+        $GLOBALS['TSFE']->fe_user->user = $GLOBALS['TSFE']->fe_user->getRawUserByName($crawlingUserName);
+        $GLOBALS['TSFE']->fe_user->fetchGroupData();
+        $GLOBALS['TSFE']->loginUser = 1;
+    }
+
 	/**
 	 * Helper function to get the generic dummy user record.
 	 */

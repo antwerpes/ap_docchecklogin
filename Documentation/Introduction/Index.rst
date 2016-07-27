@@ -36,6 +36,9 @@ It supports the **DocCheck Personal feature** (optional, requires license
 DocCheck User by some person-related data – given, that the user agrees
 to this data transmission.
 
+It supports the **DocCheck Crawler feature** to add your protected content in the DocCheck Search Engine index.
+With this powerful feature your valuable content will be searchable for healthcare professionals.
+
 
 .. _screenshots:
 
@@ -69,6 +72,15 @@ Configuration Screen
 		Configuration Screen: Routing
 
 		The options for using the Routing features.
+
+.. figure:: ../Images/ConfigScreen4.png
+		:width: 500px
+		:alt: Configuration Screen
+
+			Configuration Screen: Crawling
+
+			The options for using the Crawling features.
+
 		
 Plugin Configuration
 ^^^^^^^^^^^^^^^^^^^^

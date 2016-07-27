@@ -95,3 +95,18 @@ and your :ts:`basic.dcParam` is ``19865c8sak``, your Target URL will be:
 		:alt: Example Screenshot of DocCheck CReaM
 		
 That's it!
+
+.. _admin-step5:
+
+Step 5: Enable DocCheck Search Feature (optional)
+-------------------------------------------------
+
+Head back to the extension configuration in the Extension Manager.
+
+Choose tab "Crawling" and enable the crawling for DocCheck.
+
+Enter an username that has access to the protected pages.
+
+Enter the IP of the DocCheck Crawler. Please get in touch with the DocCheck crew if you don't know what to do here.
+
+Please install an extension that creates a Google Sitemap.
