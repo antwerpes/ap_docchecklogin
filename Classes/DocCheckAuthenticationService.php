@@ -76,7 +76,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         // Crawler user.
         $crawlingUserName = $this->extConf['crawlingUser'];
         if (!$crawlingUserName) {
-            throw new \Exception('DocCheck Authentication: No Crawling User specified in Extension settings');
+            $crawlingUserName = $this->extConf['dummyUser'];
         }
 
         $GLOBALS['TSFE']->fe_user->createUserSession(array());
