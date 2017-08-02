@@ -32,21 +32,21 @@ $EM_CONF[$_EXTKEY] = array (
 	'author_company' => 'antwerpes ag',
 	'CGLcompliance' => NULL,
 	'CGLcompliance_note' => NULL,
-	'constraints' => 
+	'constraints' =>
 		array (
-			'conflicts' => 
+			'conflicts' =>
 				array (
 					'kb_md5fepw' => '',
 					'tgr_doccheck' => '',
 				),
-			'depends' => 
+			'depends' =>
 				array (
 					'php' => '5.3.0-0.0.0',
-					'typo3' => '6.0.0-7.6.99',
+					'typo3' => '6.0.0-8.7.99',
 					'extbase' => '0.0.0-0.0.0',
 					'fluid' => '0.0.0-0.0.0',
 				),
-			'suggests' => 
+			'suggests' =>
 				array (
 				),
 		),

@@ -22,7 +22,7 @@ your TYPO3 Setup.
 ::
 
 	# tell ap_docchecklogin to use the templates stored in fileadmin/templates/DocCheckAuthentication
-	plugin.tx_apdocchecklogin.view.templateRootPath = fileadmin/templates/
+	plugin.tx_apdocchecklogin.view.templateRootPaths.0 = fileadmin/templates/
 
 References
 ----------

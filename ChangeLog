@@ -1,5 +1,5 @@
 1.1.0
-Added Typo3 7.6 compatibility (https://github.com/antwerpes/ap_docchecklogin/pull/6)
+Added Typo3 8.7 compatibility (https://github.com/antwerpes/ap_docchecklogin/pull/6)
 Added optional loginId override via TypoScript
 ===
 1.0.10
@@ -31,7 +31,7 @@ Documentation Fixes
 1.0.2
 Description and some metadata fixed
 ===
-1.0.1 
+1.0.1
 Initial release
 ===
 0.9.4
