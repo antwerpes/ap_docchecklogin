@@ -1,6 +1,7 @@
 <?php
 
 namespace Antwerpes\ApDocchecklogin;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -33,30 +34,34 @@ namespace Antwerpes\ApDocchecklogin;
 /**
  * Service 'DocCheckAuthenticationService' for the 'ap_docchecklogin' extension.
  *
- * @author	Lukas Domnick <lukas.domnick@antwerpes.de>
+ * @author    Lukas Domnick <lukas.domnick@antwerpes.de>
+ * @method fetchUserRecord($dummyUserName)
  */
+class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService
+{
+    protected $extConf = array();
 
-class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService {
-	protected $extConf = array();
+    public function __construct()
+    {
+        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin']);
 
-	public function __construct() {
-		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin']);
+    }
 
-	}
+    public function initAuth($mode, $loginData, $authInfo, $pObj)
+    {
+        $authInfo['db_user']['checkPidList'] = $this->extConf['dummyUserPid'];
+        $authInfo['db_user']['check_pid_clause'] = ' AND pid = ' . $authInfo['db_user']['checkPidList'] . ' ';
 
-	public function initAuth($mode, $loginData, $authInfo, $pObj) {
-		$authInfo['db_user']['checkPidList'] = $this->extConf['dummyUserPid'];
-		$authInfo['db_user']['check_pid_clause'] = ' AND pid = '. $authInfo['db_user']['checkPidList'] .' ';
-
-		parent::initAuth($mode, $loginData, $authInfo, $pObj );
-	}
+        parent::initAuth($mode, $loginData, $authInfo, $pObj);
+    }
 
     /**
      * Bypass login for crawling.
      *
      * @throws \Exception
      */
-    public function bypassLoginForCrawling() {
+    public function bypassLoginForCrawling()
+    {
         // No crawling.
         if (!$this->extConf['crawlingEnable']) {
             return;
@@ -85,383 +90,409 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         $GLOBALS['TSFE']->loginUser = 1;
     }
 
-	/**
-	 * Helper function to get the generic dummy user record.
-	 */
-	private function getDummyUser() {
-		$dummyUserName = $this->extConf['dummyUser'];
+    /**
+     * Helper function to get the generic dummy user record.
+     *
+     * @throws \Exception
+     */
+    private function getDummyUser()
+    {
+        $dummyUserName = $this->extConf['dummyUser'];
 
-		if(!$dummyUserName) {
-			throw new \Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
-		}
+        if (!$dummyUserName) {
+            throw new \Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
+        }
 
-		$user = $this->fetchUserRecord( $dummyUserName );
+        $user = $this->fetchUserRecord($dummyUserName);
 
-		if ( !$user ) {
-			throw new \Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid'] );
-		}
+        if (!$user) {
+            throw new \Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid']);
+        }
 
-		return $user;
-	}
+        return $user;
+    }
 
-	/**
-	 * Fetch or create a unique user.
-	 *
-	 * @param $uniqKey string
-	 * @param $dcVal string for routing, if wanted
-	 *
-	 * @return array user array
-	 * @throws \Exception
-	 */
-	protected function getUniqueUser( $uniqKey, $dcVal ) {
-		if( !$this->isValidMd5($uniqKey)) {
-			throw new \Exception('DocCheck Authentication: unique key is not valid.');
-		}
-		$group = $this->getUniqueUserGroupId($dcVal);
+    /**
+     * Fetch or create a unique user.
+     *
+     * @param $uniqKey string
+     * @param $dcVal string for routing, if wanted
+     *
+     * @return array user array
+     * @throws \Exception
+     */
+    protected function getUniqueUser($uniqKey, $dcVal)
+    {
+        if (!$this->isValidMd5($uniqKey)) {
+            throw new \Exception('DocCheck Authentication: unique key is not valid.');
+        }
+        $group = $this->getUniqueUserGroupId($dcVal);
 
-		// try and fetch the user
-		$username = $this->generateUserNameFromUniqueKey($uniqKey);
-		$userObject = $this->fetchUserRecord($username);
+        // try and fetch the user
+        $username = $this->generateUserNameFromUniqueKey($uniqKey);
+        $userObject = $this->fetchUserRecord($username);
 
-		if( $userObject ) {
-			// cool, we know you already? nice!
-			return $userObject;
-		}
-		// else: we dont have a record for this user yet
+        if ($userObject) {
+            // cool, we know you already? nice!
+            return $userObject;
+        }
+        // else: we dont have a record for this user yet
 
-		$userObject = $this->createUserRecord($username, $group, $this->extConf['dummyUserPid']);
-		if( $userObject ) {
-			// cool, you were created.
-			return $userObject;
-		}
+        $userObject = $this->createUserRecord($username, $group, $this->extConf['dummyUserPid']);
+        if ($userObject) {
+            // cool, you were created.
+            return $userObject;
+        }
 
-		throw new \Exception('DocCheck Authentication: Could not find or create an automated fe_user' );
-	}
+        throw new \Exception('DocCheck Authentication: Could not find or create an automated fe_user');
+    }
 
-	/**
-	 * @param $username string the username (generated)
-	 * @param $group int group id
-	 * @param $pid int page id where the user record is created
-	 * @return array User or FALSE
-	 */
-	protected function createUserRecord($username, $group, $pid ) {
-		$dbUser = $this->db_user;
-		$insertArray = array();
+    /**
+     * @param $username string the username (generated)
+     * @param $group int group id
+     * @param $pid int page id where the user record is created
+     *
+     * @return array User or FALSE
+     */
+    protected function createUserRecord($username, $group, $pid)
+    {
+        $dbUser = $this->db_user;
+        $insertArray = array();
 
-		$insertArray[ $dbUser['username_column']] = $username;
-		$insertArray['pid'] = $pid;
-		$insertArray[ $dbUser['usergroup_column'] ] = $group;
-		$insertArray['crdate'] = $insertArray['tstamp'] = time();
+        $insertArray[$dbUser['username_column']] = $username;
+        $insertArray['pid'] = $pid;
+        $insertArray[$dbUser['usergroup_column']] = $group;
+        $insertArray['crdate'] = $insertArray['tstamp'] = time();
 
-		// add a salted random password
-		$insertArray[ $dbUser['userident_column']] = md5( rand() . time() . $username . $GLOBALS["TYPO3_CONF_VARS"]["SYS"]["encryptionKey"]);
+        // add a salted random password
+        $insertArray[$dbUser['userident_column']] = md5(rand() . time() . $username . $GLOBALS["TYPO3_CONF_VARS"]["SYS"]["encryptionKey"]);
 
-		$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
+        $res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
 
-		// get the newly created user
-		$user = $this->fetchUserRecord($username);
-		return $user;
-	}
+        // get the newly created user
+        return $this->fetchUserRecord($username);
+    }
 
-	/**
-	 * generate a user name for this unique key. Just adds a prefix, actually, for now.
-	 *
-	 * @param $uniqKey string
-	 * @return string
-	 */
-	protected function generateUserNameFromUniqueKey($uniqKey) {
-		return 'dc_' . $uniqKey;
-	}
-
-
-	/**
-	 * If DocCheck Personal parameters are detected, add them to the user object.
-	 *
-	 * @param $user array the user record
-	 * @return array the updated user record
-	 */
-	protected function augmentDcPersonal($user) {
-
-		$paramMapping =  array(
-			// dc => typo3
-			'dc_titel' => 'title',
-			'dc_vorname' => 'first_name',
-			'dc_name' => 'last_name',
-			'dc_strasse' => 'address',
-			'dc_plz' => 'zip',
-			'dc_ort' => 'city',
-			'dc_land' => 'country',
-			'dc_email' => 'email',
-			// doccheck profession and discipline: see the official technical documentation at https://crm.doccheck.com/
-			'dc_beruf' => 'tx_apdocchecklogin_prof',
-			'dc_fachgebiet' => 'tx_apdocchecklogin_disc'
-		);
-
-		$updateArr = array();
-		foreach( $paramMapping as $dcFieldname => $typo3Fieldname) {
-			// only touch the fields that have been provided by dcPersonal
-			if( $_GET[$dcFieldname] ) {
-				$val = utf8_encode($_GET[$dcFieldname]);
-				$user[$typo3Fieldname] = $val;
-				$updateArr[$typo3Fieldname] = $val;
-			}
-		}
-
-		if( count($updateArr) > 0 ) {
-			// save the changes to db
-			$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
-		}
-
-		return $user;
-	}
-
-	/**
-	 * get the group, into which generated users are supposed to be added. this can be a static configured group, or
-	 * - in combination with the routing feature, a resolved group id.
-	 *
-	 * @param $dcVal
-	 * @return int group id
-	 * @throws \Exception
-	 */
-	protected function getUniqueUserGroupId( $dcVal ) {
-
-		// is routing enabled?
-		if( $this->extConf['routingEnable']) {
-			$grp = $this->getRoutedGroupId($dcVal);
-			if( !$grp ) {
-				// error, because no group is set to match the given $_GET['dc'] parameter.
-				throw new \Exception('DocCheck Authentication: No suitable routing found.' );
-			}
-		} else {
-			$grp = $this->extConf['uniqueKeyGroup'];
-			if( !$grp ) {
-				throw new \Exception('DocCheck Authentication: No uniqueKeyGroup set.' );
-			}
-		}
-
-		// cast as int
-		$grp = intval($grp, 10);
-
-		if( null === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid']) ) {
-			// whoops, no group found
-			throw new \Exception('DocCheck Authentication: Could not find front end user group ' . $grp );
-		}
-
-		return $grp;
-	}
+    /**
+     * generate a user name for this unique key. Just adds a prefix, actually, for now.
+     *
+     * @param $uniqKey string
+     *
+     * @return string
+     */
+    protected function generateUserNameFromUniqueKey($uniqKey)
+    {
+        return 'dc_' . $uniqKey;
+    }
 
 
-	/**
-	 * Fetch the group record for a given id, on a specific PID
-	 *
-	 * @param $groupId int
-	 * @param $pid int Page ID where the group is stored
-	 * @return array group record, or null if no matching group was found
-	 */
-	protected function fetchGroupRecord($groupId, $pid )   {
+    /**
+     * If DocCheck Personal parameters are detected, add them to the user object.
+     *
+     * @param $user array the user record
+     *
+     * @return array the updated user record
+     */
+    protected function augmentDcPersonal($user)
+    {
 
-		if( !is_integer($groupId) || 0 === $groupId ) {
-			return null;
-		}
+        $paramMapping = array(
+            // dc => typo3
+            'dc_titel' => 'title',
+            'dc_vorname' => 'first_name',
+            'dc_name' => 'last_name',
+            'dc_strasse' => 'address',
+            'dc_plz' => 'zip',
+            'dc_ort' => 'city',
+            'dc_land' => 'country',
+            'dc_email' => 'email',
+            // doccheck profession and discipline: see the official technical documentation at https://crm.doccheck.com/
+            'dc_beruf' => 'tx_apdocchecklogin_prof',
+            'dc_fachgebiet' => 'tx_apdocchecklogin_disc'
+        );
 
-		$group = null;
+        $updateArr = array();
+        foreach ($paramMapping as $dcFieldname => $typo3Fieldname) {
+            // only touch the fields that have been provided by dcPersonal
+            if ($_GET[$dcFieldname]) {
+                $val = utf8_encode($_GET[$dcFieldname]);
+                $user[$typo3Fieldname] = $val;
+                $updateArr[$typo3Fieldname] = $val;
+            }
+        }
 
-		$dbGroups = $this->db_groups;
+        if (count($updateArr) > 0) {
+            // save the changes to db
+            $res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
+        }
 
-		$groupIdClause = 'uid = ' . intval($groupId,10) . ' AND pid = ' . intval($pid) . ' AND deleted = 0 AND hidden = 0';
+        return $user;
+    }
 
-		// Look up the user by the username and/or extraWhere:
-		$dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-			'*',
-			$dbGroups['table'],
-			$groupIdClause
-		);
+    /**
+     * get the group, into which generated users are supposed to be added. this can be a static configured group, or
+     * - in combination with the routing feature, a resolved group id.
+     *
+     * @param $dcVal
+     *
+     * @return int group id
+     * @throws \Exception
+     */
+    protected function getUniqueUserGroupId($dcVal)
+    {
+
+        // is routing enabled?
+        if ($this->extConf['routingEnable']) {
+            $grp = $this->getRoutedGroupId($dcVal);
+            if (!$grp) {
+                // error, because no group is set to match the given $_GET['dc'] parameter.
+                throw new \Exception('DocCheck Authentication: No suitable routing found.');
+            }
+        } else {
+            $grp = $this->extConf['uniqueKeyGroup'];
+            if (!$grp) {
+                throw new \Exception('DocCheck Authentication: No uniqueKeyGroup set.');
+            }
+        }
+
+        // cast as int
+        $grp = intval($grp, 10);
+
+        if (null === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid'])) {
+            // whoops, no group found
+            throw new \Exception('DocCheck Authentication: Could not find front end user group ' . $grp);
+        }
+
+        return $grp;
+    }
 
 
-		if ($dbres) {
-			$group = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres);
-			$GLOBALS['TYPO3_DB']->sql_free_result($dbres);
-		}
+    /**
+     * Fetch the group record for a given id, on a specific PID
+     *
+     * @param $groupId int
+     * @param $pid int Page ID where the group is stored
+     *
+     * @return array group record, or null if no matching group was found
+     */
+    protected function fetchGroupRecord($groupId, $pid)
+    {
 
-		return $group;
-	}
+        if (!is_integer($groupId) || 0 === $groupId) {
+            return null;
+        }
 
-	/**
-	 * Read the routing map and find a suitable group id for this user
-	 *
-	 * @param $dcVal string
-	 * @return int ID of the associated group, or null if none found
-	 */
-	protected function getRoutedGroupId($dcVal) {
-		// first, explode the route map
-		$routingMapStr = $this->extConf['routingMap'];
-		$routingMapStr = explode(',',$routingMapStr);
-		foreach( $routingMapStr as $routeItem ) {
-			list($grp,$dcParam) = explode('=', $routeItem);
-			if( $dcParam === $dcVal ) {
-				return $grp;
-			}
-		}
-		return null;
-	}
+        $group = null;
 
-	protected function isValidMd5( $md5 ) {
-		return !empty($md5) && preg_match('/^[a-f0-9]{32}$/', $md5);
-	}
+        $dbGroups = $this->db_groups;
 
-	/**
-	 * Retreive the Dummy User whenever we come from the DocCheck Service.
-	 *
-	 * @return mixed Array of all users matching current IP
-	 */
-	function getUser() {
-		$dcVal = $_GET['dc'];
+        $groupIdClause = 'uid = ' . intval($groupId, 10) . ' AND pid = ' . intval($pid) . ' AND deleted = 0 AND hidden = 0';
 
-		// if no dc param is given - let's not even bother getting the dummy user
-		if( !$dcVal || strlen( $dcVal ) === 0 ) {
-			return null;
-		}
+        // Look up the user by the username and/or extraWhere:
+        $dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+            '*',
+            $dbGroups['table'],
+            $groupIdClause
+        );
 
-		// if we are not using uniquekey feature, just get the dummy user...
-		if( !$this->extConf['uniqueKeyEnable'] ) {
-			$user = $this->getDummyUser();
-		} else {
-			$user = $this->getUniqueUser( $_GET['uniquekey'], $dcVal );
-			if( $this->extConf['dcPersonalEnable'] ) {
-				$user = $this->augmentDcPersonal($user);
-			}
-		}
 
-		return $user;
-	}
+        if ($dbres) {
+            $group = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres);
+            $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
+        }
 
-	/**
-	 * Authenticate a user
-	 * Return 200 if the DocCheck Login is okay. This means that no more checks are needed. Otherwise authentication may fail because we may don't have a password.
-	 *
-	 * @param	$user array Data of user.
-	 * @return	boolean|200|100
-	 */
-	function authUser($user) {
-		// return values:
-		// 200 - authenticated and no more checking needed - useful for IP checking without password
-		// 100 - Just go on. User is not authenticated but there's still no reason to stop.
-		// false - this service was the right one to authenticate the user but it failed
-		// true - this service was able to authenticate the user
+        return $group;
+    }
 
-		$dcVal = $_GET['dc'];
+    /**
+     * Read the routing map and find a suitable group id for this user
+     *
+     * @param $dcVal string
+     *
+     * @return int ID of the associated group, or null if none found
+     */
+    protected function getRoutedGroupId($dcVal)
+    {
+        // first, explode the route map
+        $routingMapStr = $this->extConf['routingMap'];
+        $routingMapStr = explode(',', $routingMapStr);
+        foreach ($routingMapStr as $routeItem) {
+            list($grp, $dcParam) = explode('=', $routeItem);
+            if ($dcParam === $dcVal) {
+                return $grp;
+            }
+        }
+        return null;
+    }
 
-		// check whether there's a chance this user is "ours"
-		if( !$this->extConf['uniqueKeyEnable'] ) {
-			$ok = $this->authDummyUser( $user, $dcVal );
-		} else {
-			$ok = $this->authUniqueUser($user, $dcVal);
-		}
-		// cool, some auth method thought it's fine. Quickly configure the redirect feature.
-		if( $ok === 200 ) {
-			if( $this->extConf['useFeLoginRedirect'] === '1' ) {
-				// TODO: Find a better place to store this bit of information
-				$GLOBALS['ap_docchecklogin_do_redirect'] = true;
+    protected function isValidMd5($md5)
+    {
+        return !empty($md5) && preg_match('/^[a-f0-9]{32}$/', $md5);
+    }
 
-				$hookParams = array( 'user' => $user, 'ok' => $ok );
-				$ok = $hookParams['ok'];
-			}
-		}
+    /**
+     * Retrieve the Dummy User whenever we come from the DocCheck Service.
+     *
+     * @return mixed Array of all users matching current IP
+     * @throws \Exception
+     */
+    function getUser()
+    {
+        $dcVal = $_GET['dc'];
 
-		return $ok;
-	}
+        // if no dc param is given - let's not even bother getting the dummy user
+        if (!$dcVal || strlen($dcVal) === 0) {
+            return null;
+        }
 
-	/**
-	 * Check whether
-	 * ... the given user is the dummy user
-	 * ... the dummy may sign in with this dc-param
-	 *
-	 * @param $user
-	 * @param string
-	 * @return boolean|100|200
-	 */
-	protected function authDummyUser($user, $dcVal) {
-		if( !$this->isDummyUser( $user )) {
-			// oops, not the dummy user. Try other auth methods.
-			return 100;
-		}
+        // if we are not using uniquekey feature, just get the dummy user...
+        if (!$this->extConf['uniqueKeyEnable']) {
+            $user = $this->getDummyUser();
+        } else {
+            $user = $this->getUniqueUser($_GET['uniquekey'], $dcVal);
+            if ($this->extConf['dcPersonalEnable']) {
+                $user = $this->augmentDcPersonal($user);
+            }
+        }
 
-		// now check whether we have the valid dc param
+        return $user;
+    }
 
-		if( strlen( $dcVal ) > 0 && $dcVal === $this->extConf['dcParam'] ) {
-			return 200;
-		} else {
-			// the dummy user may never sign in without the valid dcParam
-			return false;
-		}
-	}
+    /**
+     * Authenticate a user
+     * Return 200 if the DocCheck Login is okay. This means that no more checks are needed. Otherwise authentication may fail because we may don't have a password.
+     *
+     * @param    $user array Data of user.
+     *
+     * @return    boolean|200|100
+     */
+    function authUser($user)
+    {
+        // return values:
+        // 200 - authenticated and no more checking needed - useful for IP checking without password
+        // 100 - Just go on. User is not authenticated but there's still no reason to stop.
+        // false - this service was the right one to authenticate the user but it failed
+        // true - this service was able to authenticate the user
 
-	/**
-	 *
-	 */
-	protected function authUniqueUser($user, $dcVal) {
-		if( !$this->isUniqueUser($user)) {
-			// not a unique user, try other auth methods.
-			return 100;
-		}
-		// find the correct group
-		$expectedGroupId = $this->getUniqueUserGroupId($dcVal);
-		$actualGroupId = intval($user[$this->db_user['usergroup_column'] ]);
+        $dcVal = $_GET['dc'];
 
-		// the given dcval does not match any configured group id
-		if( !$actualGroupId ) {
-			return false;
-		}
+        // check whether there's a chance this user is "ours"
+        if (!$this->extConf['uniqueKeyEnable']) {
+            $ok = $this->authDummyUser($user, $dcVal);
+        } else {
+            $ok = $this->authUniqueUser($user, $dcVal);
+        }
+        // cool, some auth method thought it's fine. Quickly configure the redirect feature.
+        if ($ok === 200) {
+            if ($this->extConf['useFeLoginRedirect'] === '1') {
+                // TODO: Find a better place to store this bit of information
+                $GLOBALS['ap_docchecklogin_do_redirect'] = true;
 
-		// is the unqiueUser in the expected group?
-		if( $expectedGroupId !== $actualGroupId) {
-			// nope.
-			return false;
-		}
+                $hookParams = array('user' => $user, 'ok' => $ok);
+                $ok = $hookParams['ok'];
+            }
+        }
 
-		return 200;
-	}
+        return $ok;
+    }
 
-	/**
-	 * Find out whether a given user is the dummy (non-unique)
-	 *
-	 * @param $user
-	 * @return boolean
-	 */
-	protected function isDummyUser($user) {
-		// wait, are we supposed to use unique key? then how can this be a dummy user?
-		if( $this->extConf['uniqueKeyEnable'] ) {
-			return false;
-		}
+    /**
+     * Check whether
+     * ... the given user is the dummy user
+     * ... the dummy may sign in with this dc-param
+     *
+     * @param $user
+     * @param string
+     *
+     * @return boolean|100|200
+     */
+    protected function authDummyUser($user, $dcVal)
+    {
+        if (!$this->isDummyUser($user)) {
+            // oops, not the dummy user. Try other auth methods.
+            return 100;
+        }
 
-		return ( $user['pid'] === (int)$this->extConf['dummyUserPid']
-			&& $user['username'] === $this->extConf['dummyUser']);
-	}
+        // now check whether we have the valid dc param
 
-	/**
-	 * Detect whether a given user has been generated by this extension
-	 *
-	 * @param $user
-	 * @return boolean
-	 */
-	protected function isUniqueUser($user) {
-		// if uniquekey is not even enabled, this can't be a unique key user.
-		if( !$this->extConf['uniqueKeyEnable'] ) {
-			return false;
-		}
+        if (strlen($dcVal) > 0 && $dcVal === $this->extConf['dcParam']) {
+            return 200;
+        }
+        return false;
+    }
 
-		// if the pid is incorrect, break
-		if ( $user['pid'] !== (int)$this->extConf['dummyUserPid'] ) {
-			return false;
-		}
+    /**
+     *
+     * @throws \Exception
+     */
+    protected function authUniqueUser($user, $dcVal)
+    {
+        if (!$this->isUniqueUser($user)) {
+            // not a unique user, try other auth methods.
+            return 100;
+        }
+        // find the correct group
+        $expectedGroupId = $this->getUniqueUserGroupId($dcVal);
+        $actualGroupId = intval($user[$this->db_user['usergroup_column']]);
 
-		// match the user name pattern
-		if( !preg_match('/^dc_[0-9a-f]{32}$/i', $user[ $this->db_user['username_column'] ] ) ) {
-			return false;
-		}
+        // the given dcval does not match any configured group id
+        if (!$actualGroupId) {
+            return false;
+        }
 
-		return true;
-	}
+        // is the unqiueUser in the expected group?
+        if ($expectedGroupId !== $actualGroupId) {
+            // nope.
+            return false;
+        }
+
+        return 200;
+    }
+
+    /**
+     * Find out whether a given user is the dummy (non-unique)
+     *
+     * @param $user
+     *
+     * @return boolean
+     */
+    protected function isDummyUser($user)
+    {
+        // wait, are we supposed to use unique key? then how can this be a dummy user?
+        if ($this->extConf['uniqueKeyEnable']) {
+            return false;
+        }
+
+        return ($user['pid'] === (int)$this->extConf['dummyUserPid']
+            && $user['username'] === $this->extConf['dummyUser']);
+    }
+
+    /**
+     * Detect whether a given user has been generated by this extension
+     *
+     * @param $user
+     *
+     * @return boolean
+     */
+    protected function isUniqueUser($user)
+    {
+        // if uniquekey is not even enabled, this can't be a unique key user.
+        if (!$this->extConf['uniqueKeyEnable']) {
+            return false;
+        }
+
+        // if the pid is incorrect, break
+        if ($user['pid'] !== (int)$this->extConf['dummyUserPid']) {
+            return false;
+        }
+
+        // match the user name pattern
+        if (!preg_match('/^dc_[0-9a-f]{32}$/i', $user[$this->db_user['username_column']])) {
+            return false;
+        }
+
+        return true;
+    }
 
 
 }
