@@ -15,9 +15,4 @@ When you add something to the documentation, you will need to install sphinx to 
 Then create a folder `\_not_versioned` inside the `Documentation` folder. Render the Docs using `sphinx-build Documentation Documentation/_not_versioned/out` from within the extension folder
 
 ## Releasing a version
-* Increase the version number in ext_emconf.php
-* add a new line on top of the ChangeLog file
-* git commit and tag the version
-* zip everything except .git, .gitignore, Documentation/\_not_versioned and existing zips
-* name the zip file `ap_docchecklogin_<version>.zip`
-    (e.g. ap_docchecklogin_1.0.7.zip)
+* Everytime you create a new release, a webhook will publish this automatically to the TYPO3 TER.
