@@ -463,7 +463,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
             return false;
         }
 
-        return ($user['pid'] === (int)$this->extConf['dummyUserPid']
+        return ((int)$user['pid'] === (int)$this->extConf['dummyUserPid']
             && $user['username'] === $this->extConf['dummyUser']);
     }
 
@@ -482,7 +482,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         }
 
         // if the pid is incorrect, break
-        if ($user['pid'] !== (int)$this->extConf['dummyUserPid']) {
+        if ((int)$user['pid'] !== (int)$this->extConf['dummyUserPid']) {
             return false;
         }
 
