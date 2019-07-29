@@ -32,7 +32,7 @@ namespace Antwerpes\ApDocchecklogin\Controller;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-
+use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
  * Plugin 'DocCheck Authentication' for the 'ap_docchecklogin' extension.
@@ -138,15 +138,14 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     function getGroupRedirectPid()
     {
         $groupData = $GLOBALS['TSFE']->fe_user->groupData;
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'felogin_redirectPid',
-            $GLOBALS['TSFE']->fe_user->usergroup_table,
-            'felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')'
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_groups');
+        $statement = $queryBuilder->select('felogin_redirectPid')
+            ->from('fe_groups')
+            ->where('felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')')
+            ->execute();
 
-        if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
-            // take the first group with a redirect page
-            return $row[0];
+        while ($row = $statement->fetch()) {
+            return($row[0]);
         }
 
         return null;

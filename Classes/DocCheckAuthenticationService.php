@@ -37,6 +37,9 @@ namespace Antwerpes\ApDocchecklogin;
  * @author    Lukas Domnick <lukas.domnick@antwerpes.de>
  * @method fetchUserRecord($dummyUserName)
  */
+
+use TYPO3\CMS\Core\Database\ConnectionPool;
+
 class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 {
     protected $extConf = array();
@@ -167,7 +170,13 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         // add a salted random password
         $insertArray[$dbUser['userident_column']] = md5(rand() . time() . $username . $GLOBALS["TYPO3_CONF_VARS"]["SYS"]["encryptionKey"]);
 
-        $res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
+        // $res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($dbUser['table']);
+        $res = $queryBuilder
+        ->insert($dbUser['table'])
+        ->values($insertArray)
+        ->execute();
+
 
         // get the newly created user
         return $this->fetchUserRecord($username);
@@ -223,7 +232,15 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         if (count($updateArr) > 0) {
             // save the changes to db
-            $res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
+            // $res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->db_user['table']);
+            $queryBuilder
+                ->update($this->db_user['table'])
+                ->where(
+                    $queryBuilder->expr()->eq('uid', $user['uid']) // if 120 would be a user parameter, use $queryBuilder->createNamedParameter($param) for security reasons
+                )
+                ->set($updateArr)
+                ->execute();
         }
 
         return $user;
@@ -288,18 +305,12 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         $groupIdClause = 'uid = ' . intval($groupId, 10) . ' AND pid = ' . intval($pid) . ' AND deleted = 0 AND hidden = 0';
 
-        // Look up the user by the username and/or extraWhere:
-        $dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            '*',
-            $dbGroups['table'],
-            $groupIdClause
-        );
-
-
-        if ($dbres) {
-            $group = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres);
-            $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
-        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($dbGroups['table']);
+        $statement = $queryBuilder->select('*')
+            ->from($dbGroups['table'])
+            ->where($groupIdClause)
+            ->execute();
+        $group = $statement->fetch();
 
         return $group;
     }
