@@ -42,7 +42,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 
-    const SIGNAL_BEFORE_REDIRECT = "beforeRedirect";
+    const SIGNAL_BEFORE_REDIRECT = 'beforeRedirect';
 
     /**
      * Frontend User array, old style.
@@ -70,9 +70,9 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     }
 
     /**
-     *
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
-    function mainAction()
+    public function mainAction()
     {
         // is logged in?
         if ($this->feUser) {
@@ -84,9 +84,12 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     }
 
     /**
-     *
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
      */
-    function loggedInAction()
+    public function loggedInAction()
     {
         // if the settings tell us to redirect on a successful login, do so now.
         if ($GLOBALS['ap_docchecklogin_do_redirect'] === true) {
@@ -103,7 +106,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
             // aight, so did we find a page id to redirect to?
             if ($redirectToUri) {
                 // this way works better than $this->redirect(), which will always add some bullshit params
-                if (stripos($redirectToUri, '/') === 0) {
+                if (strpos($redirectToUri, '/') === 0) {
                     $redirectToUri = substr($redirectToUri, 1);
                 }
 
@@ -121,7 +124,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
      *
      * @return int|null Page ID
      */
-    function getUserRedirectPid()
+    public function getUserRedirectPid()
     {
         $redirectToPid = $GLOBALS['TSFE']->fe_user->user['felogin_redirectPid'];
         if (!$redirectToPid) {
@@ -135,7 +138,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
      *
      * @return int|null Page ID
      */
-    function getGroupRedirectPid()
+    public function getGroupRedirectPid()
     {
         $groupData = $GLOBALS['TSFE']->fe_user->groupData;
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
@@ -155,20 +158,23 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     /**
      *
      */
-    function loginFormAction()
+    public function loginFormAction()
     {
         // set a redirect cookie, if a redirect_url GET Param is set
         $redirectUrl = $_GET['redirect_url'];
         // ... or if the redirect-option is chosen in the plugin
         if (!$redirectUrl && $this->settings['redirect']) {
-            $redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])->setLinkAccessRestrictedPages(true)->setCreateAbsoluteUri(true)->build();
+            $redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])
+                ->setLinkAccessRestrictedPages(true)
+                ->setCreateAbsoluteUri(true)
+                ->build();
         }
         if ($redirectUrl) {
             // store as cookie and expire in 10 minutes
             setcookie('ap_docchecklogin_redirect', $redirectUrl, intval(gmdate('U')) + 600, '/');
         } else {
             // delete an older cookie if no longer needed
-            setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
+            setcookie('ap_docchecklogin_redirect', '', intval(gmdate('U')) - 3600, '/');
         }
 
         $loginId = $this->settings['loginId'];
@@ -191,7 +197,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     /**
      * @return null
      */
-    function getRedirectUriFromCookie()
+    public function getRedirectUriFromCookie()
     {
         if (array_key_exists('ap_docchecklogin_redirect', $_COOKIE)) {
             // clear the cookie
@@ -207,7 +213,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     /**
      * @return null
      */
-    function getRedirectUriFromFeLogin()
+    public function getRedirectUriFromFeLogin()
     {
         // user configuration takes precedence
         $redirectToPid = $this->getUserRedirectPid();
@@ -225,10 +231,11 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     }
 
     /**
-     * Call a specified hook
+     * @param string $hookName
+     * @param array $params
      *
-     * @param $hookName
-     * @param $params
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotException
+     * @throws \TYPO3\CMS\Extbase\SignalSlot\Exception\InvalidSlotReturnException
      */
     protected function callHook($hookName, &$params)
     {

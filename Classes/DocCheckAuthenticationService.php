@@ -2,6 +2,8 @@
 
 namespace Antwerpes\ApDocchecklogin;
 
+use Exception;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -39,14 +41,26 @@ namespace Antwerpes\ApDocchecklogin;
  */
 class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 {
+
+    /**
+     * @var array|mixed
+     */
     protected $extConf = array();
 
+    /**
+     * DocCheckAuthenticationService constructor.
+     */
     public function __construct()
     {
         $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin']);
-
     }
 
+    /**
+     * @param string $mode
+     * @param array $loginData
+     * @param array $authInfo
+     * @param \TYPO3\CMS\Core\Authentication\AbstractUserAuthentication $pObj
+     */
     public function initAuth($mode, $loginData, $authInfo, $pObj)
     {
         $authInfo['db_user']['checkPidList'] = $this->extConf['dummyUserPid'];
@@ -58,7 +72,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Bypass login for crawling.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function bypassLoginForCrawling()
     {
@@ -70,7 +84,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         // Crawler IP
         $crawlingIP = $this->extConf['crawlingIP'];
         if (!$crawlingIP) {
-            throw new \Exception('DocCheck Authentication: No DocCheck Crawler IP specified in Extension settings');
+            throw new Exception('DocCheck Authentication: No DocCheck Crawler IP specified in Extension settings');
         }
 
         // IP not matching
@@ -93,20 +107,20 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Helper function to get the generic dummy user record.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function getDummyUser()
     {
         $dummyUserName = $this->extConf['dummyUser'];
 
         if (!$dummyUserName) {
-            throw new \Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
+            throw new Exception('DocCheck Authentication: No Dummy User specified in Extension settings');
         }
 
         $user = $this->fetchUserRecord($dummyUserName);
 
         if (!$user) {
-            throw new \Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid']);
+            throw new Exception('DocCheck Authentication: Dummy User ' . $dummyUserName . ' was not found on the Page with the ID ' . $this->extConf['dummyUserPid']);
         }
 
         return $user;
@@ -119,12 +133,12 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      * @param $dcVal string for routing, if wanted
      *
      * @return array user array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getUniqueUser($uniqKey, $dcVal)
     {
         if (!$this->isValidMd5($uniqKey)) {
-            throw new \Exception('DocCheck Authentication: unique key is not valid.');
+            throw new Exception('DocCheck Authentication: unique key is not valid.');
         }
         $group = $this->getUniqueUserGroupId($dcVal);
 
@@ -144,7 +158,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
             return $userObject;
         }
 
-        throw new \Exception('DocCheck Authentication: Could not find or create an automated fe_user');
+        throw new Exception('DocCheck Authentication: Could not find or create an automated fe_user');
     }
 
     /**
@@ -165,7 +179,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         $insertArray['crdate'] = $insertArray['tstamp'] = time();
 
         // add a salted random password
-        $insertArray[$dbUser['userident_column']] = md5(rand() . time() . $username . $GLOBALS["TYPO3_CONF_VARS"]["SYS"]["encryptionKey"]);
+        $insertArray[$dbUser['userident_column']] = md5(rand() . time() . $username . $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']);
 
         $res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
 
@@ -236,7 +250,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      * @param $dcVal
      *
      * @return int group id
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getUniqueUserGroupId($dcVal)
     {
@@ -246,12 +260,12 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
             $grp = $this->getRoutedGroupId($dcVal);
             if (!$grp) {
                 // error, because no group is set to match the given $_GET['dc'] parameter.
-                throw new \Exception('DocCheck Authentication: No suitable routing found.');
+                throw new Exception('DocCheck Authentication: No suitable routing found.');
             }
         } else {
             $grp = $this->extConf['uniqueKeyGroup'];
             if (!$grp) {
-                throw new \Exception('DocCheck Authentication: No uniqueKeyGroup set.');
+                throw new Exception('DocCheck Authentication: No uniqueKeyGroup set.');
             }
         }
 
@@ -260,7 +274,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         if (null === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid'])) {
             // whoops, no group found
-            throw new \Exception('DocCheck Authentication: Could not find front end user group ' . $grp);
+            throw new Exception('DocCheck Authentication: Could not find front end user group ' . $grp);
         }
 
         return $grp;
@@ -325,6 +339,11 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         return null;
     }
 
+    /**
+     * @param string $md5
+     *
+     * @return bool
+     */
     protected function isValidMd5($md5)
     {
         return !empty($md5) && preg_match('/^[a-f0-9]{32}$/', $md5);
@@ -334,9 +353,9 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      * Retrieve the Dummy User whenever we come from the DocCheck Service.
      *
      * @return mixed Array of all users matching current IP
-     * @throws \Exception
+     * @throws Exception
      */
-    function getUser()
+    public function getUser()
     {
         $dcVal = $_GET['dc'];
 
@@ -359,14 +378,14 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     }
 
     /**
-     * Authenticate a user
      * Return 200 if the DocCheck Login is okay. This means that no more checks are needed. Otherwise authentication may fail because we may don't have a password.
      *
-     * @param    $user array Data of user.
+     * @param array $user
      *
-     * @return    boolean|200|100
+     * @return bool|int|mixed
+     * @throws Exception
      */
-    function authUser($user)
+    public function authUser($user)
     {
         // return values:
         // 200 - authenticated and no more checking needed - useful for IP checking without password
@@ -413,17 +432,20 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
             return 100;
         }
 
-        // now check whether we have the valid dc param
-
-        if (strlen($dcVal) > 0 && $dcVal === $this->extConf['dcParam']) {
+        if ($dcVal === $this->extConf['dcParam']
+            && strlen($dcVal) > 0
+        ) {
             return 200;
         }
         return false;
     }
 
     /**
+     * @param array $user
+     * @param $dcVal
      *
-     * @throws \Exception
+     * @return bool|int
+     * @throws Exception
      */
     protected function authUniqueUser($user, $dcVal)
     {
@@ -452,7 +474,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Find out whether a given user is the dummy (non-unique)
      *
-     * @param $user
+     * @param array $user
      *
      * @return boolean
      */
@@ -470,7 +492,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Detect whether a given user has been generated by this extension
      *
-     * @param $user
+     * @param array $user
      *
      * @return boolean
      */
@@ -493,6 +515,5 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         return true;
     }
-
 
 }
