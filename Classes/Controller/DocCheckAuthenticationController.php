@@ -1,47 +1,21 @@
 <?php
 
-namespace Antwerpes\ApDocchecklogin\Controller;
+namespace Antwerpes\ApDocCheckLogin\Controller;
 
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2013 antwerpes ag <opensource@antwerpes.de>
- *  All rights reserved
- *
- *  The TYPO3 Extension ap_docchecklogin is licensed under the MIT License
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  THE SOFTWARE.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 /**
- * Plugin 'DocCheck Authentication' for the 'ap_docchecklogin' extension.
+ * Class DocCheckAuthenticationController
  *
- * @author    Lukas Domnick <lukas.domnick@antwerpes.de>
+ * @package Antwerpes\ApDocCheckLogin\Controller
  */
 class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 
+    /**
+     *
+     */
     const SIGNAL_BEFORE_REDIRECT = 'beforeRedirect';
 
     /**
@@ -77,10 +51,10 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
         // is logged in?
         if ($this->feUser) {
             $this->forward('loggedIn');
-        } else {
-            // not logged in, do redirect the user
-            $this->forward('loginForm');
+            return;
         }
+        // not logged in, do redirect the user
+        $this->forward('loginForm');
     }
 
     /**
@@ -118,7 +92,6 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
         }
     }
 
-
     /**
      * Tries to get a redirect configuration (Page ID) for the current user.
      *
@@ -141,13 +114,13 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     public function getGroupRedirectPid()
     {
         $groupData = $GLOBALS['TSFE']->fe_user->groupData;
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            'felogin_redirectPid',
-            $GLOBALS['TSFE']->fe_user->usergroup_table,
-            'felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')'
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_groups');
+        $statement = $queryBuilder->select('felogin_redirectPid')
+            ->from('fe_groups')
+            ->where('felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')')
+            ->execute();
 
-        if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res)) {
+        while ($row = $statement->fetch()) {
             // take the first group with a redirect page
             return $row[0];
         }

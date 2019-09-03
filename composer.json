@@ -1,13 +1,13 @@
 {
   "name": "antwerpes/ap_docchecklogin",
-  "description": "Official DocCheck Login Extension for Typo3 6.x to 9.7.x",
+  "description": "Official DocCheck Login Extension for Typo3 <= 10.0",
   "type": "typo3-cms-extension",
   "homepage": "https://github.com/antwerpes/ap_docchecklogin",
   "keywords": [
     "typo3",
     "cms",
-    "clickstorm",
-    "SEO"
+    "login",
+    "doccheck"
   ],
   "license": "MIT",
   "authors": [
@@ -22,11 +22,12 @@
   ],
   "autoload": {
     "psr-4": {
-      "Antwerpes\\ApDocchecklogin\\": "Classes/"
+      "Antwerpes\\ApDocCheckLogin\\": "Classes/"
     }
   },
   "require": {
-    "typo3/cms-core": "<=8.7"
+    "typo3/cms-core": "<10.0",
+    "typo3/cms-extbase": "<10.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master"

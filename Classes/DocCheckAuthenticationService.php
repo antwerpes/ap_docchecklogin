@@ -1,58 +1,30 @@
 <?php
 
-namespace Antwerpes\ApDocchecklogin;
+namespace Antwerpes\ApDocCheckLogin;
 
 use Exception;
-
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2013 antwerpes ag <opensource@antwerpes.de>
- *  All rights reserved
- *
- *  The TYPO3 Extension ap_docchecklogin is licensed under the MIT License
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the "Software"), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  THE SOFTWARE.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Service 'DocCheckAuthenticationService' for the 'ap_docchecklogin' extension.
+ * Class DocCheckAuthenticationService
  *
- * @author    Lukas Domnick <lukas.domnick@antwerpes.de>
- * @method fetchUserRecord($dummyUserName)
+ * @package Antwerpes\ApDocCheckLogin
  */
 class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService
 {
 
     /**
-     * @var array|mixed
+     * @var array
      */
-    protected $extConf = array();
+    protected $extConf = [];
 
     /**
      * DocCheckAuthenticationService constructor.
      */
     public function __construct()
     {
-        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin']);
+        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin'], false);
     }
 
     /**
@@ -181,7 +153,11 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         // add a salted random password
         $insertArray[$dbUser['userident_column']] = md5(rand() . time() . $username . $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey']);
 
-        $res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($dbUser['table'], $insertArray);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($dbUser['table']);
+        $queryBuilder
+            ->insert($dbUser['table'])
+            ->values($insertArray)
+            ->execute();
 
         // get the newly created user
         return $this->fetchUserRecord($username);
@@ -190,7 +166,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * generate a user name for this unique key. Just adds a prefix, actually, for now.
      *
-     * @param $uniqKey string
+     * @param string $uniqKey
      *
      * @return string
      */
@@ -237,7 +213,16 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         if (count($updateArr) > 0) {
             // save the changes to db
-            $res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
+            // $res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->db_user['table'], 'uid=' . $user['uid'], $updateArr);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->db_user['table']);
+            $queryBuilder
+                ->update($this->db_user['table'])
+                ->where(
+                    $queryBuilder->expr()->eq('uid',
+                        $user['uid']) // if 120 would be a user parameter, use $queryBuilder->createNamedParameter($param) for security reasons
+                )
+                ->set($updateArr)
+                ->execute();
         }
 
         return $user;
@@ -254,7 +239,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      */
     protected function getUniqueUserGroupId($dcVal)
     {
-
         // is routing enabled?
         if ($this->extConf['routingEnable']) {
             $grp = $this->getRoutedGroupId($dcVal);
@@ -271,7 +255,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         // cast as int
         $grp = intval($grp, 10);
-
         if (null === $this->fetchGroupRecord($grp, $this->extConf['dummyUserPid'])) {
             // whoops, no group found
             throw new Exception('DocCheck Authentication: Could not find front end user group ' . $grp);
@@ -302,18 +285,12 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         $groupIdClause = 'uid = ' . intval($groupId, 10) . ' AND pid = ' . intval($pid) . ' AND deleted = 0 AND hidden = 0';
 
-        // Look up the user by the username and/or extraWhere:
-        $dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-            '*',
-            $dbGroups['table'],
-            $groupIdClause
-        );
-
-
-        if ($dbres) {
-            $group = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres);
-            $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
-        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($dbGroups['table']);
+        $statement = $queryBuilder->select('*')
+            ->from($dbGroups['table'])
+            ->where($groupIdClause)
+            ->execute();
+        $group = $statement->fetch();
 
         return $group;
     }
@@ -339,11 +316,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
         return null;
     }
 
-    /**
-     * @param string $md5
-     *
-     * @return bool
-     */
     protected function isValidMd5($md5)
     {
         return !empty($md5) && preg_match('/^[a-f0-9]{32}$/', $md5);
@@ -378,6 +350,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     }
 
     /**
+     * Authenticate a user
      * Return 200 if the DocCheck Login is okay. This means that no more checks are needed. Otherwise authentication may fail because we may don't have a password.
      *
      * @param array $user
@@ -432,19 +405,16 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
             return 100;
         }
 
-        if ($dcVal === $this->extConf['dcParam']
-            && strlen($dcVal) > 0
-        ) {
+        // now check whether we have the valid dc param
+
+        if (strlen($dcVal) > 0 && $dcVal === $this->extConf['dcParam']) {
             return 200;
         }
         return false;
     }
 
     /**
-     * @param array $user
-     * @param $dcVal
      *
-     * @return bool|int
      * @throws Exception
      */
     protected function authUniqueUser($user, $dcVal)
@@ -474,7 +444,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Find out whether a given user is the dummy (non-unique)
      *
-     * @param array $user
+     * @param $user
      *
      * @return boolean
      */
@@ -492,7 +462,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
     /**
      * Detect whether a given user has been generated by this extension
      *
-     * @param array $user
+     * @param $user
      *
      * @return boolean
      */
@@ -515,5 +485,4 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         return true;
     }
-
 }
