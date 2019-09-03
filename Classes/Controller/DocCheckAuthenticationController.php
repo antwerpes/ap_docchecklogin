@@ -33,7 +33,6 @@ namespace Antwerpes\ApDocchecklogin\Controller;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 /**
  * Plugin 'DocCheck Authentication' for the 'ap_docchecklogin' extension.
  *
@@ -41,7 +40,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-
     const SIGNAL_BEFORE_REDIRECT = 'beforeRedirect';
 
     /**

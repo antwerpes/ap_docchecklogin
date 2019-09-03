@@ -209,7 +209,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      */
     protected function augmentDcPersonal($user)
     {
-
         $paramMapping = array(
             // dc => typo3
             'dc_titel' => 'title',
@@ -291,7 +290,6 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
      */
     protected function fetchGroupRecord($groupId, $pid)
     {
-
         if (!is_integer($groupId) || 0 === $groupId) {
             return null;
         }
@@ -515,5 +513,4 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthentication
 
         return true;
     }
-
 }
