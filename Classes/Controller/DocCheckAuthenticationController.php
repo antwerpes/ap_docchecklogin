@@ -31,8 +31,8 @@ namespace Antwerpes\ApDocchecklogin\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Plugin 'DocCheck Authentication' for the 'ap_docchecklogin' extension.
@@ -41,8 +41,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  */
 class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-
-    const SIGNAL_BEFORE_REDIRECT = "beforeRedirect";
+    const SIGNAL_BEFORE_REDIRECT = 'beforeRedirect';
 
     /**
      * Frontend User array, old style.
@@ -51,17 +50,11 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
      */
     protected $feUser;
 
-    /**
-     *
-     */
     public function initializeObject()
     {
         $this->initializeFeUser();
     }
 
-    /**
-     *
-     */
     protected function initializeFeUser()
     {
         if ($GLOBALS['TSFE']->fe_user->user && $GLOBALS['TSFE']->fe_user->user['uid']) {
@@ -69,10 +62,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
         }
     }
 
-    /**
-     *
-     */
-    function mainAction()
+    public function mainAction()
     {
         // is logged in?
         if ($this->feUser) {
@@ -83,10 +73,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
         }
     }
 
-    /**
-     *
-     */
-    function loggedInAction()
+    public function loggedInAction()
     {
         // if the settings tell us to redirect on a successful login, do so now.
         if ($GLOBALS['ap_docchecklogin_do_redirect'] === true) {
@@ -107,26 +94,27 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
                     $redirectToUri = substr($redirectToUri, 1);
                 }
 
-                $hookParams = array('redirectToUri' => &$redirectToUri, 'feUser' => &$this->feUser);
+                $hookParams = ['redirectToUri' => &$redirectToUri, 'feUser' => &$this->feUser];
                 $this->callHook(self::SIGNAL_BEFORE_REDIRECT, $hookParams);
                 $this->redirectToUri($redirectToUri);
             }
+
             return;
         }
     }
-
 
     /**
      * Tries to get a redirect configuration (Page ID) for the current user.
      *
      * @return int|null Page ID
      */
-    function getUserRedirectPid()
+    public function getUserRedirectPid()
     {
         $redirectToPid = $GLOBALS['TSFE']->fe_user->user['felogin_redirectPid'];
         if (!$redirectToPid) {
             return null;
         }
+
         return $redirectToPid;
     }
 
@@ -135,26 +123,23 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
      *
      * @return int|null Page ID
      */
-    function getGroupRedirectPid()
+    public function getGroupRedirectPid()
     {
         $groupData = $GLOBALS['TSFE']->fe_user->groupData;
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('fe_groups');
         $statement = $queryBuilder->select('felogin_redirectPid')
             ->from('fe_groups')
-            ->where('felogin_redirectPid<>\'\' AND uid IN (' . implode(',', $groupData['uid']) . ')')
+            ->where('felogin_redirectPid<>\'\' AND uid IN ('.implode(',', $groupData['uid']).')')
             ->execute();
 
         while ($row = $statement->fetch()) {
-            return($row[0]);
+            return $row[0];
         }
 
         return null;
     }
 
-    /**
-     *
-     */
-    function loginFormAction()
+    public function loginFormAction()
     {
         // set a redirect cookie, if a redirect_url GET Param is set
         $redirectUrl = $_GET['redirect_url'];
@@ -167,7 +152,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
             setcookie('ap_docchecklogin_redirect', $redirectUrl, intval(gmdate('U')) + 600, '/');
         } else {
             // delete an older cookie if no longer needed
-            setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
+            setcookie('ap_docchecklogin_redirect', '', intval(gmdate('U')) - 3600, '/');
         }
 
         $loginId = $this->settings['loginId'];
@@ -180,7 +165,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
         if ($this->settings['loginLayout'] === 'custom') {
             $templateKey = $this->settings['customLayout'];
         } else {
-            $templateKey = $this->settings['loginLayout'] . '_red';
+            $templateKey = $this->settings['loginLayout'].'_red';
         }
 
         $this->view->assign('loginId', $loginId);
@@ -190,12 +175,12 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     /**
      * @return null
      */
-    function getRedirectUriFromCookie()
+    public function getRedirectUriFromCookie()
     {
         if (array_key_exists('ap_docchecklogin_redirect', $_COOKIE)) {
             // clear the cookie
             $redirectUri = $_COOKIE['ap_docchecklogin_redirect'];
-            setcookie('ap_docchecklogin_redirect', "", intval(gmdate('U')) - 3600, '/');
+            setcookie('ap_docchecklogin_redirect', '', intval(gmdate('U')) - 3600, '/');
 
             return $redirectUri;
         }
@@ -206,7 +191,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     /**
      * @return null
      */
-    function getRedirectUriFromFeLogin()
+    public function getRedirectUriFromFeLogin()
     {
         // user configuration takes precedence
         $redirectToPid = $this->getUserRedirectPid();
@@ -224,7 +209,7 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     }
 
     /**
-     * Call a specified hook
+     * Call a specified hook.
      *
      * @param $hookName
      * @param $params
@@ -239,7 +224,6 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
                 GeneralUtility::callUserFunction($funcRef, $params, $this);
             }
         }
-
 
         if ($this->signalSlotDispatcher) {
             $this->signalSlotDispatcher->dispatch(__CLASS__, $hookName, $params);
