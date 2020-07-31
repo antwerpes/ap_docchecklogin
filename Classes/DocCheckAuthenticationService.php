@@ -41,7 +41,7 @@ namespace Antwerpes\ApDocchecklogin;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-class DocCheckAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationService
+class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication
 {
     protected $extConf = [];
 
