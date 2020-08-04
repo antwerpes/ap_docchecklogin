@@ -41,13 +41,13 @@ namespace Antwerpes\ApDocchecklogin;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication
+class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\AuthenticationService
 {
     protected $extConf = [];
 
     public function __construct()
     {
-        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ap_docchecklogin']);
+        $this->extConf = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['ap_docchecklogin'];
     }
 
     public function initAuth($mode, $loginData, $authInfo, $pObj)
@@ -376,7 +376,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication
      *
      * @return bool|200|100
      */
-    public function authUser($user)
+    public function authUser(array $user): int
     {
         // return values:
         // 200 - authenticated and no more checking needed - useful for IP checking without password
