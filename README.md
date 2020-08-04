@@ -1,7 +1,7 @@
 ap_docchecklogin
 ================
 
-Integrate DocCheck Login with your TYPO3 6.x - 9.7.x projects.
+Integrate DocCheck Login with your TYPO3 9.x - 10.4.x projects.
 
 
 ## Manual
