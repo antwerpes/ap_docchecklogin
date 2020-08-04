@@ -12,10 +12,10 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title'              => 'DocCheck Login',
-    'description'        => 'Official DocCheck Login Extension for TYPO3 9.5',
+    'description'        => 'Official DocCheck Login Extension for TYPO3 9 - 10',
     'category'           => 'plugin',
     'shy'                => false,
-    'version'            => '2.1.2',
+    'version'            => '2.2.0',
     'dependencies'       => 'extbase,fluid',
     'conflicts'          => 'tgr_doccheck,kb_md5fepw',
     'priority'           => '',
@@ -39,7 +39,7 @@ $EM_CONF[$_EXTKEY] = [
         ],
         'depends' => [
             'php'     => '7.1.0-7.3.0',
-            'typo3'   => '9.5.0-10.5.99',
+            'typo3'   => '9.5.0-10.4.99',
             'extbase' => '0.0.0-0.0.0',
             'fluid'   => '0.0.0-0.0.0',
         ],
