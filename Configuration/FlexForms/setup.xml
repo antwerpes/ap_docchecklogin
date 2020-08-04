@@ -26,6 +26,7 @@
 							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.loginLayout</label>
 							<config>
 								<type>select</type>
+								<renderType>selectSingle</renderType>
 								<items type="array">
 									<numIndex index="0" type="array">
 										<numIndex index="0">XL</numIndex>
@@ -69,6 +70,7 @@
 							<label>LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language</label>
 							<config>
 								<type>select</type>
+								<renderType>selectSingle</renderType>
 								<items type="array">
 									<numIndex index="0" type="array">
 										<numIndex index="0">LLL:EXT:ap_docchecklogin/Resources/Private/Language/locallang_backend.xml:flexform.language.de</numIndex>

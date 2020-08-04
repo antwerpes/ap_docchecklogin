@@ -5,7 +5,7 @@ if (!defined('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'Antwerpes.'.$_EXTKEY,
+    'Antwerpes.ApDocchecklogin',
     'DocCheckAuthentication',
     [
         'DocCheckAuthentication' => 'main, loggedIn, loginForm',
@@ -17,7 +17,7 @@ if (!defined('TYPO3_MODE')) {
 );
 
 // Add the service
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService($_EXTKEY, 'auth', 'Antwerpes\\ApDocchecklogin\\DocCheckAuthenticationService', [
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService('ap_docchecklogin', 'auth', 'Antwerpes\\ApDocchecklogin\\DocCheckAuthenticationService', [
     'title'       => 'DocCheck Authentication Service',
     'description' => 'Authenticates users through the DocCheck Authentication Service',
     'subtype'     => 'getUserFE,authUserFE',
