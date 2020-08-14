@@ -40,6 +40,8 @@ namespace Antwerpes\ApDocchecklogin;
  */
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\AuthenticationService
 {
@@ -236,9 +238,11 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\Authe
                 ->update($this->db_user['table'])
                 ->where(
                     $queryBuilder->expr()->eq('uid', $user['uid']) // if 120 would be a user parameter, use $queryBuilder->createNamedParameter($param) for security reasons
-                )
-                ->set($updateArr)
-                ->execute();
+            );
+            foreach($updateArr as $updKey => $updVal) {
+                $queryBuilder->set($updKey, $updVal);
+            }
+            $queryBuilder->execute();
         }
 
         return $user;
