@@ -77,7 +77,6 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     {
         // if the settings tell us to redirect on a successful login, do so now.
         if ($GLOBALS['ap_docchecklogin_do_redirect'] === true) {
-
             // reset the do_redirect flag
             $GLOBALS['ap_docchecklogin_do_redirect'] = false;
 
@@ -143,6 +142,10 @@ class DocCheckAuthenticationController extends \TYPO3\CMS\Extbase\Mvc\Controller
     {
         // set a redirect cookie, if a redirect_url GET Param is set
         $redirectUrl = $_GET['redirect_url'];
+        // set a redirect cookie, if a return_url GET Param is set
+        if (!$redirectUrl) {
+            $redirectUrl = $_GET['return_url'];
+        }
         // ... or if the redirect-option is chosen in the plugin
         if (!$redirectUrl && $this->settings['redirect']) {
             $redirectUrl = $this->uriBuilder->reset()->setTargetPageUid($this->settings['redirect'])->setLinkAccessRestrictedPages(true)->setCreateAbsoluteUri(true)->build();
