@@ -4,6 +4,8 @@ dcParam = 1
 dummyUser =
 # cat=basic/enable; type=int; label=UID of the page where the dummy user or the user group(s) is stored
 dummyUserPid = 0
+# cat=basic/enable; type=string; label=Client Secret is needed to establish a oauth Connection
+clientSecret =
 # cat=basic/enable; type=boolean; label=Use fe_user redirect after login-Feature. Allows you to set a target URL in the Dummy User's Config when fe_login is enabled. 1|0
 useFeLoginRedirect = 1
 # cat=uniquekey/enable; type=boolean; label=Enable the DocCheck UniqueKey-Feature:Creates one Typo3 FE User per Unique Key. Paid DocCheck license required.

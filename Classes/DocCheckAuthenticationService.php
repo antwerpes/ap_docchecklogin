@@ -39,9 +39,11 @@ namespace Antwerpes\ApDocchecklogin;
  * @method fetchUserRecord($dummyUserName)
  */
 
+use Antwerpes\ApDocchecklogin\Utility\OauthUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+
 
 class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\AuthenticationService
 {
@@ -353,6 +355,7 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\Authe
     public function getUser()
     {
         $dcVal = $_GET['dc'];
+        mail('sabrina.zwirner@antwerpes.de', 'Global', print_r( time(), 1));
 
         // if no dc param is given - let's not even bother getting the dummy user
         if (!$dcVal || strlen($dcVal) === 0) {
@@ -390,12 +393,14 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\Authe
 
         $dcVal = $_GET['dc'];
 
-        // check whether there's a chance this user is "ours"
-        if (!$this->extConf['uniqueKeyEnable']) {
-            $ok = $this->authDummyUser($user, $dcVal);
-        } else {
+        //Check if needed Parameter for oauth are given
+        //Else try to auth the Dummyuser
+        if($_GET['code'] && $this->extConf['clientSecret'] && $this->extConf['uniqueKeyEnable']){
             $ok = $this->authUniqueUser($user, $dcVal);
+        }else{
+            $ok = $this->authDummyUser($user, $dcVal);
         }
+
         // cool, some auth method thought it's fine. Quickly configure the redirect feature.
         if ($ok === 200) {
             if ($this->extConf['useFeLoginRedirect'] === '1') {
@@ -460,7 +465,14 @@ class DocCheckAuthenticationService extends \TYPO3\CMS\Core\Authentication\Authe
             return false;
         }
 
-        return 200;
+        //Authenticate the User via Dc Login
+        $oauth = new OauthUtility();
+        $authenticateUser = $oauth->generateToken($_GET['login_id'], $this->extConf['clientSecret'], $_GET['code']);
+        if($authenticateUser){
+            return 200;
+        }else{
+            return false;
+        }
     }
 
     /**
