@@ -33,6 +33,7 @@ namespace Antwerpes\ApDocchecklogin\Controller;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Plugin 'DocCheck Authentication' for the 'ap_docchecklogin' extension.
